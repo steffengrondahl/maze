@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8">
+        <title>Maze - second try</title>
+		<link rel="icon" type="image/png" href="images/logo-32x32px.png" >
+		<meta name="author" content="Steffen Grøndahl" >
+	</head>
+	<body>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
+			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
+			<rect stroke="none" fill="#aaccff" x="60" y="60" width="302" height="302" />
+			<g id="maze" stroke="#000000" stroke-width="2" stroke-linecap="square" fill="none">
+				<line x1="61" y1="61" x2="61" y2="121" />
+				<line x1="301" y1="61" x2="301" y2="121" />
+				<line x1="361" y1="61" x2="361" y2="121" />
+				<line x1="61" y1="121" x2="61" y2="181" />
+				<line x1="121" y1="121" x2="121" y2="181" />
+				<line x1="241" y1="121" x2="241" y2="181" />
+				<line x1="301" y1="121" x2="301" y2="181" />
+				<line x1="361" y1="121" x2="361" y2="181" />
+				<line x1="61" y1="181" x2="61" y2="241" />
+				<line x1="121" y1="181" x2="121" y2="241" />
+				<line x1="241" y1="181" x2="241" y2="241" />
+				<line x1="301" y1="181" x2="301" y2="241" />
+				<line x1="361" y1="181" x2="361" y2="241" />
+				<line x1="61" y1="241" x2="61" y2="301" />
+				<line x1="121" y1="241" x2="121" y2="301" />
+				<line x1="181" y1="241" x2="181" y2="301" />
+				<line x1="241" y1="241" x2="241" y2="301" />
+				<line x1="361" y1="241" x2="361" y2="301" />
+				<line x1="61" y1="301" x2="61" y2="361" />
+				<line x1="181" y1="301" x2="181" y2="361" />
+				<line x1="361" y1="301" x2="361" y2="361" />
+				<line x1="61" y1="61" x2="121" y2="61" />
+				<line x1="61" y1="361" x2="121" y2="361" />
+				<line x1="121" y1="61" x2="181" y2="61" />
+				<line x1="121" y1="121" x2="181" y2="121" />
+				<line x1="121" y1="241" x2="181" y2="241" />
+				<line x1="121" y1="361" x2="181" y2="361" />
+				<line x1="181" y1="61" x2="241" y2="61" />
+				<line x1="181" y1="181" x2="241" y2="181" />
+				<line x1="181" y1="361" x2="241" y2="361" />
+				<line x1="241" y1="61" x2="301" y2="61" />
+				<line x1="241" y1="241" x2="301" y2="241" />
+				<line x1="241" y1="361" x2="301" y2="361" />
+				<line x1="301" y1="301" x2="361" y2="301" />
+				<line x1="301" y1="361" x2="361" y2="361" />
+			</g>
+			<circle id="marker" stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(91,331)" />
+		</svg>
+		<div style="position: relative; height: 122px;">
+			<button id="up" style="position: absolute; top: 0; left: 181px; width: 60px; height: 60px;">&#8593;</button>
+			<button id="left" style="position: absolute; top: 61px; left: 120px; width: 60px; height: 60px;">&#8592;</button>
+			<button id="down" style="position: absolute; top: 61px; left: 181px; width: 60px; height: 60px;">&#8595;</button>
+			<button id="right" style="position: absolute; top: 61px; left: 242px; width: 60px; height: 60px;">&#8594;</button>
+		</div>
+		<script>
+			var current_column = 0;
+			var current_row = 4;
+			
+			var vertical_walls = []; 
+			vertical_walls[0] = [true, false, false, false, true, true];
+			vertical_walls[1] = [true, true, false, true, true, true];
+			vertical_walls[2] = [true, true, false, true, true, true];
+			vertical_walls[3] = [true, true, true, true, false, true];
+			vertical_walls[4] = [true, false, true, false, false, true];
+
+			var horizontal_walls = []; 
+			horizontal_walls[0] = [true, false, false, false, false, true];
+			horizontal_walls[1] = [true, true, false, true, false, true];
+			horizontal_walls[2] = [true, false, true, false, false, true];
+			horizontal_walls[3] = [true, false, false, true, false, true];
+			horizontal_walls[4] = [false, false, false, false, true, true];
+
+	
+			function move_marker() { 
+				var x = parseInt(91 + 60*current_column);
+				var y = parseInt(91 + 60*current_row);
+				var marker = document.getElementById("marker");
+				marker.setAttributeNS(null,"transform","translate("+x+","+y+")");
+			}
+
+			document.getElementById("left").addEventListener("click",move_left,false);
+	
+			function move_left() { 
+				if(vertical_walls[current_row][current_column]) {
+					alert("Bump - du kan ikke gå til venstre!");
+				}
+				else {
+					current_column--;
+					move_marker();
+				}
+			}
+			
+			document.getElementById("right").addEventListener("click",move_right,false);
+	
+			function move_right() { 
+				if(vertical_walls[current_row][current_column+1]) {
+					alert("Bump - du kan ikke gå til højre!");
+				}
+				else {
+					current_column++;
+					move_marker();
+				}
+			}
+
+			document.getElementById("up").addEventListener("click",move_up,false);
+	
+			function move_up() { 
+				if(horizontal_walls[current_column][current_row]) {
+					alert("Bump - du kan ikke gå op!");
+				}
+				else {
+					current_row--;
+					move_marker();
+					if(current_row == -1) {
+						alert("Tillykke - du slap ud af labyrinten");
+						var obj = createEdges(5,5);
+						vertical_walls = obj.vertical;
+						horizontal_walls = obj.horizontal;
+						horizontal_walls[4][0] = false;
+						drawMaze();
+						current_row = 4;
+						current_column = 0;
+						move_marker();
+					}
+				}
+			}
+
+			document.getElementById("down").addEventListener("click",move_down,false);
+	
+			function move_down() { 
+				if(horizontal_walls[current_column][current_row+1]) {
+					alert("Bump - du kan ikke gå ned!");
+				}
+				else {
+					current_row++;
+					move_marker();
+				}
+			}
+			
+			function createEdges(columns,rows) {
+				// initialise
+				var n=columns*rows;
+				var horizontal =[]; // matrix holding booleans telling if there's an horizontal edge or not
+				for(i=0;i<columns;i++) {
+					horizontal[i] = [];
+					for(j=0;j<rows+1;j++) {
+						horizontal[i][j] = true;
+					}
+				}
+				var vertical =[]; // matrix holding booleans telling if there's an vertical edge or not
+				for(i=0;i<rows;i++) {
+					vertical[i] = [];
+					for(j=0;j<columns+1;j++) {
+						vertical[i][j] = true;
+					}
+				}
+				var	unvisited = []; // cells in maze are initially not visited
+				for (j=0; j<rows; j++) {
+					unvisited[j] = [];
+					for (k=0; k<columns; k++) {
+						unvisited[j].push(true);
+					}
+				}
+				var	path = [];
+				// select random starting cell
+				var here = [Math.floor(Math.random()*rows), Math.floor(Math.random()*columns)];
+				unvisited[here[0]][here[1]]= false; // the starting point is visited
+				n = n-1;
+				path.push(here);
+				// loop till all cell visited 
+				while (n > 0) {
+					var neighbors = []; // neighboring points to current cell, here 
+					if(here[0] > 0) {
+						neighbors.push([here[0]-1,here[1]]);
+					}
+					if(here[0] < rows-1) {
+						neighbors.push([here[0]+1,here[1]]);
+					}
+					if(here[1] > 0) {
+						neighbors.push([here[0],here[1]-1]);
+					}
+					if(here[1] < columns-1) {
+						neighbors.push([here[0],here[1]+1]);	
+					}
+					var potential = [];
+					for (j = 0; j < neighbors.length; j++) {
+						if (unvisited[neighbors[j][0]][neighbors[j][1]]) {
+							potential.push(neighbors[j]); // only unvisited neighbors are potential
+						}
+					}
+					if (potential.length > 0) {
+						var next= potential[Math.floor(Math.random()*potential.length)];
+						unvisited[next[0]][next[1]]= false;
+						n = n-1;
+						if(next[0] == here[0]) { // same row
+							vertical[next[0]][Math.max(next[1],here[1])] = false;
+						}
+						else { // same column
+							horizontal[next[1]][Math.max(next[0],here[0])] = false;
+						}
+						path.push(next);
+						here = next;
+					} 
+					else {
+						here = path.pop();
+					}
+				}
+				return {horizontal: horizontal, vertical: vertical};
+			}
+	
+			function drawMaze() {
+				var group = document.getElementById("maze");
+				// Clean up previous maze
+				while (group.firstChild) {
+					group.removeChild(group.firstChild);
+				}
+				for(row=0; row<5; row++) {
+					for(column=0; column<6; column++) {
+						if(vertical_walls[row][column]) {
+							var x = 61 + column*60;
+							var y = 61 + row*60;
+							var line = document.createElementNS("http://www.w3.org/2000/svg", "line"); 
+							line.setAttributeNS(null,"x1",parseInt(x));
+							line.setAttributeNS(null,"y1",parseInt(y));
+							line.setAttributeNS(null,"x2",parseInt(x));
+							line.setAttributeNS(null,"y2",parseInt(y+60)); 
+							group.appendChild(line);
+						}
+					}
+				}
+				for(column=0; column<5; column++) {
+					for(row=0; row<6; row++) {
+						if(horizontal_walls[column][row]) {
+							var x = 61 + column*60;
+							var y = 61 + row*60;
+							var line = document.createElementNS("http://www.w3.org/2000/svg", "line"); 
+							line.setAttributeNS(null,"x1",parseInt(x));
+							line.setAttributeNS(null,"y1",parseInt(y));
+							line.setAttributeNS(null,"x2",parseInt(x+60));
+							line.setAttributeNS(null,"y2",parseInt(y)); 
+							group.appendChild(line);
+						}
+					}
+				}
+			}
+
+		</script>
+	</body>
+</html>
+		
