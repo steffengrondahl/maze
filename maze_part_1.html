@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8">
+        <title>Labyrintspil (del 1)</title>
+		<link rel="icon" type="image/png" href="images/logo-32x32px.png" >
+		<meta name="author" content="Steffen Grøndahl" >
+		<style>
+			body {
+			}
+			div {
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Labyrintspil (del 1)</h1>
+		<p>Her lidt sjov afveksling. Jeg elsker at implementere små sjove spil i JavaScript og har
+		allerede en masse på <a href="http://steffengrondahl.dk/spil.html" target="_blank">min hjemmeside</a> (og i
+		parentes bemærket er dette ikke min hjemmeside men min blog ;-)).
+		Det seneste spil er et <a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">labyrintspil</a>, 
+		som jeg primært implementerede for sjov og for at have noget at skrive om her på bloggen :-)</p>
+		<p>I denne blog tutorial har jeg valgt en meget simpel udgave af spillet, som det er hverken
+		et specielt svært eller sjovt spil og ej heller visuelt særligt bemærkelsesværdigt. Men spillet bliver 
+		implementeret, så det let kan gøres mere interessant og flot, som det er gjort på min
+		<a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">hjemmeside</a>.</p>
+		<p>Da der trods alt er en del at implementere vil jeg gennemgå dette over 2 blogindlæg:</p>
+		<ol>
+			<li>I dette blogindlæg (det første om spillet) gennemgås den nødvendige HTML kode og hvordan man med
+			JavaScript kan bevæge sig gennem labyrinten.</li>
+			<li>I næste blogindlæg vil jeg vise hvordan man kan konstruere selve labyrinten dynamisk ved hjælp af en
+			snedig algoritme.</li>
+		</ol>
+		<p>Målet er at implementere et simpel spil med en labyrint, som man kan bevæge sig igennem
+		ved at bruge taster, der simulerer piletaster på et keyboard:</p>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
+			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
+			<rect stroke="none" fill="#aaccff" x="60" y="60" width="302" height="302" />
+			<!--
+			<line stroke="#ffffff" x1="61" y1="121" x2="361" y2="121" />
+			<line stroke="#ffffff" x1="61" y1="181" x2="361" y2="181" />
+			<line stroke="#ffffff" x1="61" y1="241" x2="361" y2="241" />
+			<line stroke="#ffffff" x1="61" y1="301" x2="361" y2="301" />
+			<line stroke="#ffffff" x1="121" y1="61" x2="121" y2="361" />
+			<line stroke="#ffffff" x1="181" y1="61" x2="181" y2="361" />
+			<line stroke="#ffffff" x1="241" y1="61" x2="241" y2="361" />
+			<line stroke="#ffffff" x1="301" y1="61" x2="301" y2="361" />
+			-->
+			<g id="maze" stroke="#000000" stroke-width="2" stroke-linecap="square" fill="none">
+				<line x1="61" y1="61" x2="61" y2="121" />
+				<line x1="301" y1="61" x2="301" y2="121" />
+				<line x1="361" y1="61" x2="361" y2="121" />
+				<line x1="61" y1="121" x2="61" y2="181" />
+				<line x1="121" y1="121" x2="121" y2="181" />
+				<line x1="241" y1="121" x2="241" y2="181" />
+				<line x1="301" y1="121" x2="301" y2="181" />
+				<line x1="361" y1="121" x2="361" y2="181" />
+				<line x1="61" y1="181" x2="61" y2="241" />
+				<line x1="121" y1="181" x2="121" y2="241" />
+				<line x1="241" y1="181" x2="241" y2="241" />
+				<line x1="301" y1="181" x2="301" y2="241" />
+				<line x1="361" y1="181" x2="361" y2="241" />
+				<line x1="61" y1="241" x2="61" y2="301" />
+				<line x1="121" y1="241" x2="121" y2="301" />
+				<line x1="181" y1="241" x2="181" y2="301" />
+				<line x1="241" y1="241" x2="241" y2="301" />
+				<line x1="361" y1="241" x2="361" y2="301" />
+				<line x1="61" y1="301" x2="61" y2="361" />
+				<line x1="181" y1="301" x2="181" y2="361" />
+				<line x1="361" y1="301" x2="361" y2="361" />
+				<line x1="61" y1="61" x2="121" y2="61" />
+				<line x1="61" y1="361" x2="121" y2="361" />
+				<line x1="121" y1="61" x2="181" y2="61" />
+				<line x1="121" y1="121" x2="181" y2="121" />
+				<line x1="121" y1="241" x2="181" y2="241" />
+				<line x1="121" y1="361" x2="181" y2="361" />
+				<line x1="181" y1="61" x2="241" y2="61" />
+				<line x1="181" y1="181" x2="241" y2="181" />
+				<line x1="181" y1="361" x2="241" y2="361" />
+				<line x1="241" y1="61" x2="301" y2="61" />
+				<line x1="241" y1="241" x2="301" y2="241" />
+				<line x1="241" y1="361" x2="301" y2="361" />
+				<line x1="301" y1="301" x2="361" y2="301" />
+				<line x1="301" y1="361" x2="361" y2="361" />
+			</g>
+			<circle id="marker" stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(91,331)" />
+		</svg>
+		<div style="position: relative; height: 122px;">
+			<button id="up" style="position: absolute; top: 0; left: 181px; width: 60px; height: 60px;">&#8593;</button>
+			<button id="left" style="position: absolute; top: 61px; left: 120px; width: 60px; height: 60px;">&#8592;</button>
+			<button id="down" style="position: absolute; top: 61px; left: 181px; width: 60px; height: 60px;">&#8595;</button>
+			<button id="right" style="position: absolute; top: 61px; left: 242px; width: 60px; height: 60px;">&#8594;</button>
+		</div>
+		<p>Det er oplagt, at et tryk på tasten med pil op (&#8593;) skal få den gule markør til at bevæge sig op og tilsvarende
+		skal tryk på pil venstre, højre og ned får markøren til at gå samme vej. Bevægelsen skal dog naturligvis kun være
+		mulig dersom der ikke er en labyrint væg i vejen.</p>
+		<h2>HTML kode</h2>
+		<p>HTML koden er forholdvis simpel. Selve labyrinten er implementeret som et inline SVG-element (eller billede) og knapperne
+		er lagt ind i et relativt positioneret DIV-element for at få dem placeret pænt:</p>
+		<pre>
+	&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422"&gt;
+		&lt;rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" /&gt;
+		&lt;rect stroke="none" fill="#aaccff" x="60" y="60" width="302" height="302" /&gt;
+		&lt;g id="maze" stroke="#000000" stroke-width="2" stroke-linecap="square" fill="none"&gt;
+			&lt;line x1="61" y1="61" x2="61" y2="121" /&gt;
+			&lt;line x1="301" y1="61" x2="301" y2="121" /&gt;
+			&lt;line x1="361" y1="61" x2="361" y2="121" /&gt;
+			&lt;line x1="61" y1="121" x2="61" y2="181" /&gt;
+			&lt;line x1="121" y1="121" x2="121" y2="181" /&gt;
+			&lt;line x1="241" y1="121" x2="241" y2="181" /&gt;
+			&lt;line x1="301" y1="121" x2="301" y2="181" /&gt;
+			&lt;line x1="361" y1="121" x2="361" y2="181" /&gt;
+			&lt;line x1="61" y1="181" x2="61" y2="241" /&gt;
+			&lt;line x1="121" y1="181" x2="121" y2="241" /&gt;
+			&lt;line x1="241" y1="181" x2="241" y2="241" /&gt;
+			&lt;line x1="301" y1="181" x2="301" y2="241" /&gt;
+			&lt;line x1="361" y1="181" x2="361" y2="241" /&gt;
+			&lt;line x1="61" y1="241" x2="61" y2="301" /&gt;
+			&lt;line x1="121" y1="241" x2="121" y2="301" /&gt;
+			&lt;line x1="181" y1="241" x2="181" y2="301" /&gt;
+			&lt;line x1="241" y1="241" x2="241" y2="301" /&gt;
+			&lt;line x1="361" y1="241" x2="361" y2="301" /&gt;
+			&lt;line x1="61" y1="301" x2="61" y2="361" /&gt;
+			&lt;line x1="181" y1="301" x2="181" y2="361" /&gt;
+			&lt;line x1="361" y1="301" x2="361" y2="361" /&gt;
+			&lt;line x1="61" y1="61" x2="121" y2="61" /&gt;
+			&lt;line x1="61" y1="361" x2="121" y2="361" /&gt;
+			&lt;line x1="121" y1="61" x2="181" y2="61" /&gt;
+			&lt;line x1="121" y1="121" x2="181" y2="121" /&gt;
+			&lt;line x1="121" y1="241" x2="181" y2="241" /&gt;
+			&lt;line x1="121" y1="361" x2="181" y2="361" /&gt;
+			&lt;line x1="181" y1="61" x2="241" y2="61" /&gt;
+			&lt;line x1="181" y1="181" x2="241" y2="181" /&gt;
+			&lt;line x1="181" y1="361" x2="241" y2="361" /&gt;
+			&lt;line x1="241" y1="61" x2="301" y2="61" /&gt;
+			&lt;line x1="241" y1="241" x2="301" y2="241" /&gt;
+			&lt;line x1="241" y1="361" x2="301" y2="361" /&gt;
+			&lt;line x1="301" y1="301" x2="361" y2="301" /&gt;
+			&lt;line x1="301" y1="361" x2="361" y2="361" /&gt;
+		&lt;/g&gt;
+		&lt;circle id="marker" stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(91,331)" /&gt;
+	&lt;/svg&gt;
+	&lt;div style="position: relative; height: 122px;"&gt;
+		&lt;button id="up" style="position: absolute; top: 0; left: 181px; width: 60px; height: 60px;"&gt;&#8593;&lt;/button&gt;
+		&lt;button id="left" style="position: absolute; top: 61px; left: 120px; width: 60px; height: 60px;"&gt;&#8592;&lt;/button&gt;
+		&lt;button id="down" style="position: absolute; top: 61px; left: 181px; width: 60px; height: 60px;"&gt;&#8595;&lt;/button&gt;
+		&lt;button id="right" style="position: absolute; top: 61px; left: 242px; width: 60px; height: 60px;"&gt;&#8594;&lt;/button&gt;
+	&lt;/div&gt;
+		</pre>
+		<p>Her skal for en god ordens skyld lige knyttes nogle får kommentarer til HTML-koden, som ellers ikke kommenteres i disse blogs.</p>
+		<ul>
+			<li>SVG elementet indeholder fire subelementer. De to først er kvadrater (<span>&lt;rect&gt;</span>), grøn henholdsvis blå. Disse
+			visualiserer området for labyrinten; det blå kvadrat udgør således baggrunden for selve labyrinten. Gruppe elementet 
+			(<span>&lt;g&gt;</span>) indeholder en række subelementer, der alle er linjer (<span>&lt;line&gt;</span>), der hver især
+			visualiserer en væg eller et stykke af en væg i labyrinten. Det sidste element er en udfyldt cirkel (<span>&lt;circle&gt;</span>)
+			der er markøren der skal bevæges gennem labyrinten. Man bemærker at denne samt gruppe elementet, der indeholder alle labyrintvæggene,
+			har fået et id, således at de kan tilgås med JavaScript DOM.</li>
+			<li>De fire knapper er positioneret absolut inden i det relativt positionerede DIV-element. De har hver en id, 
+			således at de kan tilgås med JavaScript DOM.</li>
+		</ul>
+		
+		<h2>Grundlæggende bevægelse af markøren</h2>
+		<p>Den valgte labyrint er kendetagenet ved ikke blot at være kvadratisk, men også inddelingen eller placeringen af vægge viser, 
+		at selve labyrinten er implementeret som et gitter med dimensionen 5 gange 5. Dette kan lettest ses ved at tilføje følgende
+		linjer (<span>&lt;line&gt;</span>-element) til SVG-elementet (umiddelbart efter de to <span>&lt;rect&gt;</span>-elementer):</p>
+		<pre>
+		&lt;line stroke="#ffffff" stroke-width="1" x1="61" y1="121" x2="361" y2="121" /&gt;
+		&lt;line stroke="#ffffff" stroke-width="1" x1="61" y1="181" x2="361" y2="181" /&gt;
+		&lt;line stroke="#ffffff" stroke-width="1" x1="61" y1="241" x2="361" y2="241" /&gt;
+		&lt;line stroke="#ffffff" stroke-width="1" x1="61" y1="301" x2="361" y2="301" /&gt;
+		&lt;line stroke="#ffffff" stroke-width="1" x1="121" y1="61" x2="121" y2="361" /&gt;
+		&lt;line stroke="#ffffff" stroke-width="1" x1="181" y1="61" x2="181" y2="361" /&gt;
+		&lt;line stroke="#ffffff" stroke-width="1" x1="241" y1="61" x2="241" y2="361" /&gt;
+		&lt;line stroke="#ffffff" stroke-width="1" x1="301" y1="61" x2="301" y2="361" /&gt;
+		</pre>
+		<p>Med disse linjer ser labyrinten således ud:</p>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
+			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
+			<rect stroke="none" fill="#aaccff" x="60" y="60" width="302" height="302" />
+			<line stroke="#ffffff" stroke-width="1" x1="61" y1="121" x2="361" y2="121" />
+			<line stroke="#ffffff" stroke-width="1" x1="61" y1="181" x2="361" y2="181" />
+			<line stroke="#ffffff" stroke-width="1" x1="61" y1="241" x2="361" y2="241" />
+			<line stroke="#ffffff" stroke-width="1" x1="61" y1="301" x2="361" y2="301" />
+			<line stroke="#ffffff" stroke-width="1" x1="121" y1="61" x2="121" y2="361" />
+			<line stroke="#ffffff" stroke-width="1" x1="181" y1="61" x2="181" y2="361" />
+			<line stroke="#ffffff" stroke-width="1" x1="241" y1="61" x2="241" y2="361" />
+			<line stroke="#ffffff" stroke-width="1" x1="301" y1="61" x2="301" y2="361" />
+			<g style="font-family: Arial; font-size: 20px">
+				<text x="35" y="100">0</text>
+				<text x="35" y="160">1</text>
+				<text x="35" y="220">2</text>
+				<text x="35" y="280">3</text>
+				<text x="35" y="340">4</text>
+				<text x="85" y="50">0</text>
+				<text x="145" y="50">1</text>
+				<text x="205" y="50">2</text>
+				<text x="265" y="50">3</text>
+				<text x="325" y="50">4</text>
+			</g>
+			<g stroke="#000000" stroke-width="2" stroke-linecap="square" fill="none">
+				<line x1="61" y1="61" x2="61" y2="121" />
+				<line x1="301" y1="61" x2="301" y2="121" />
+				<line x1="361" y1="61" x2="361" y2="121" />
+				<line x1="61" y1="121" x2="61" y2="181" />
+				<line x1="121" y1="121" x2="121" y2="181" />
+				<line x1="241" y1="121" x2="241" y2="181" />
+				<line x1="301" y1="121" x2="301" y2="181" />
+				<line x1="361" y1="121" x2="361" y2="181" />
+				<line x1="61" y1="181" x2="61" y2="241" />
+				<line x1="121" y1="181" x2="121" y2="241" />
+				<line x1="241" y1="181" x2="241" y2="241" />
+				<line x1="301" y1="181" x2="301" y2="241" />
+				<line x1="361" y1="181" x2="361" y2="241" />
+				<line x1="61" y1="241" x2="61" y2="301" />
+				<line x1="121" y1="241" x2="121" y2="301" />
+				<line x1="181" y1="241" x2="181" y2="301" />
+				<line x1="241" y1="241" x2="241" y2="301" />
+				<line x1="361" y1="241" x2="361" y2="301" />
+				<line x1="61" y1="301" x2="61" y2="361" />
+				<line x1="181" y1="301" x2="181" y2="361" />
+				<line x1="361" y1="301" x2="361" y2="361" />
+				<line x1="61" y1="61" x2="121" y2="61" />
+				<line x1="61" y1="361" x2="121" y2="361" />
+				<line x1="121" y1="61" x2="181" y2="61" />
+				<line x1="121" y1="121" x2="181" y2="121" />
+				<line x1="121" y1="241" x2="181" y2="241" />
+				<line x1="121" y1="361" x2="181" y2="361" />
+				<line x1="181" y1="61" x2="241" y2="61" />
+				<line x1="181" y1="181" x2="241" y2="181" />
+				<line x1="181" y1="361" x2="241" y2="361" />
+				<line x1="241" y1="61" x2="301" y2="61" />
+				<line x1="241" y1="241" x2="301" y2="241" />
+				<line x1="241" y1="361" x2="301" y2="361" />
+				<line x1="301" y1="301" x2="361" y2="301" />
+				<line x1="301" y1="361" x2="361" y2="361" />
+			</g>
+			<circle stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(91,331)" />
+		</svg>
+		<p>Her er desuden tilføjet indices fra 0 til 4 for de fem rækker og kolonner i gitteret. Således er den gule markør ved spillets start
+		i rækken med index 4 og kolonne med index 0. Når man flytter markøren vil den skulle bevæge sig fra en celle (med en givent
+		index for række henholdsvis kolonne) til en nabocelle (hvor et af de to index vil være en større eller mindre. Bevæger man
+		markøren ip vil man således mindske indexet for kolonne med 1 (til 3). Dette kan vi udnytte til at implementere en tegnerutine,
+		der tegner hvor markøren er efter, at den er blevet flyttet:</p>
+		<pre>
+	&lt;script&gt;
+		var current_column = 0;
+		var current_row = 4;
+	
+		function move_marker() { 
+			var x = parseInt(91 + 60*current_column);
+			var y = parseInt(91 + 60*current_row);
+			var marker = document.getElementById("marker");
+			marker.setAttributeNS(null,"transform","translate("+x+","+y+")");
+		}
+
+	&lt;/script&gt;	
+		</pre>
+		<p>Man ser at man flytter markøren ved at udnytte attributten "transform" på SVG-elementet. Herunder skal man berenge koordinaterne, 
+		som er givet ved den aktuelle række (<span>current_rwo</span>) og den aktuelle kolonne (<span>current_column</span>) samt et offset,
+		da labyrinten er forskudt en smule.</p>
+		<p>Man kan nu let implementere en foreløbig udgave af bevægelse til venstre med knappen "left":</p>
+		<pre>
+	&lt;script&gt;
+		document.getElementById("left").addEventListener("click",move_left,false);
+	
+		function move_left() { 
+			current_column--;
+			move_marker();
+		}
+
+	&lt;/script&gt;	
+		</pre>
+		<p>Det virker, men med en alvorlig fejl: Bevægelsen respekterer ikke labyrintens vægge men fortsætter tværs igennem, som
+		om de ikke var der. Vi skal derfor finde en måde at tage højde for disse vægge.</p>
+		
+		<h2>Beskrivelse af labyrintens vægge</h2>
+		<p>Selve labyrinten består af en række vandrette og lodrette vægge. Faktisk kan man opfatte hver væg, som et stykke, der
+		sidder på en cellerne i gitteret. To vægge kan sidde sammen, endda således af de ligge i forlængelse af hinanden, men de
+		sidder på hver sin celle. Denne måde at se gitteret og væggene på vil vi benytte os af i den følgende.</p>
+		<p>De vandrette og lodrette vægge kan beskrives hver for sig. Vi starter med de lodrette.</p>
+		<p>For hver række i labyrintens gitter kan der være op til 6 vægge. I den første kolonne er det såldes 3 vægge: En helt til
+		venstre og to helt til højre. Mellem disse er der tre plader, hvor det kunne have været en væg men ikke er det. En måde, at
+		beskrive dette på er med et array:</p>
+		<pre>
+		[true, false, false, false, true, true]
+		</pre>
+		<p>Af dette array fremgår det at der er en væg (værdien er <span>true</span>) på den første og de to sidste mulige placering 
+		af en væg, men ikke de resterende 3 steder (værdien er <span>false</span>). Tilsvarende kan vi beskrive om der er eller ikke er
+		en væg i de andre 4 kolonner med tilsvarende arrays. Og dette kan samles i et dobbeltarrat, <span>vertical_walls</span>, der ser
+		såldes ud:</p>
+		<pre>
+	&lt;script&gt;
+		var vertical_walls = []; 
+		vertical_walls[0] = [true, false, false, false, true, true];
+		vertical_walls[1] = [true, true, false, true, true, true];
+		vertical_walls[2] = [true, true, false, true, true, true];
+		vertical_walls[3] = [true, true, true, true, false, true];
+		vertical_walls[4] = [true, false, true, false, false, true];
+	&lt;/script&gt;	
+		</pre>
+		<p>Man bemærker, at første index i dette dobbelt array referer til rækken mens det andet referere til kolonnen. Således er</p>
+		<pre>
+			vertical_walls[4][1]
+		</pre>
+		<p>den anden mulige væg i den nederste række, og den er i øvrigt <span>false</span>, da der ikke er nogen væg her.</p>
+		<p>For de vandrette vægge kan man passende indføre et tilsvarende dobbelt array. Her er det lettest at se det som et array for
+		hver kolonne, med detaljer om hvilke vandrette vægge der er i den pågældende kolonne. Dobbeltarrayet, <span>horizontal_walls</span>
+		ser derfor således ud:</p>
+		<pre>
+	&lt;script&gt;
+		var horizontal_walls = []; 
+		horizontal_walls[0] = [true, false, false, false, false, true];
+		horizontal_walls[1] = [true, true, false, true, false, true];
+		horizontal_walls[2] = [true, false, true, false, false, true];
+		horizontal_walls[3] = [true, false, false, true, false, true];
+		horizontal_walls[4] = [false, false, false, false, true, true];
+	&lt;/script&gt;	
+		</pre>
+		<p>Man bemærker, at første index i dette dobbelt array nu referer til kolonnen mens det andet referere til rækken. Altså modsat
+		<span>vertical_walls</span>.</p>
+		<h2>Korrekt implementering af bevægelse</h2>
+		<p>Med implementeringen af læabyrintes vægge kan vi nu rette implementeringen af bevægelse til venstre med knappen "left":</p>
+		<pre>
+	&lt;script&gt;
+		document.getElementById("left").addEventListener("click",move_left,false);
+	
+		function move_left() { 
+			if(vertical_walls[current_row][current_column]) {
+				alert("Bump - du kan ikke gå til venstre!");
+			}
+			else {
+				current_column--;
+				move_marker();
+			}
+		}
+
+	&lt;/script&gt;	
+		</pre>
+		<p>Bevægelse til højre er stort set tilsvarende, men her skal vi kigge i cellen en plads længere til
+		højre (altså med kolonne index en større):</p>
+		<pre>
+	&lt;script&gt;
+		document.getElementById("right").addEventListener("click",move_right,false);
+	
+		function move_right() { 
+			if(vertical_walls[current_row][current_column+1]) {
+				alert("Bump - du kan ikke gå til højre!");
+			}
+			else {
+				current_column++;
+				move_marker();
+			}
+		}
+
+	&lt;/script&gt;	
+		</pre>
+		<p>Implementeringen af gå op og ned, her bruger vi blot <span>horizontal_walls</span>, da 
+		det er de vandrette vægge der kan komme i vejen for denne bevægelse. Desuden husker vi at
+		første index for denne er kolonne. Således:</p>
+		<pre>
+	&lt;script&gt;
+		document.getElementById("up").addEventListener("click",move_up,false);
+	
+		function move_up() { 
+			if(horizontal_walls[current_column][current_row]) {
+				alert("Bump - du kan ikke gå op!");
+			}
+			else {
+				current_row--;
+				move_marker();
+			}
+		}
+
+		document.getElementById("down").addEventListener("click",move_down,false);
+	
+		function move_down() { 
+			if(horizontal_walls[current_column][current_row+1]) {
+				alert("Bump - du kan ikke gå ned!");
+			}
+			else {
+				current_row++;
+				move_marker();
+			}
+		}
+
+	&lt;/script&gt;	
+		</pre>
+		<h2>Ud af labyrinten</h2>
+		<p>Der er stadig en enkelt detalje som skal på plads. For når man endelig slipper ud
+		af labyrinten sker der intet. Man kan bevæge sig ind i den igen eller fortsætte op
+		så man ryger helt ud af "spillepladen".</p>
+		<p>Det er let at spore hvornår man er kommet ud af spillet, for så er <span>current_row</span>
+		blevet -1. Vi retter derfor i metoden <span>move_up</span>:</p>
+		<pre>
+	&lt;script&gt;
+		document.getElementById("up").addEventListener("click",move_up,false);
+	
+		function move_up() { 
+			if(horizontal_walls[current_column][current_row]) {
+				alert("Bump - du kan ikke gå op!");
+			}
+			else {
+				current_row--;
+				move_marker();
+				if(current_row == -1) {
+					alert("Tillykke - du slap ud af labyrinten");
+					current_row = 4;
+					current_column = 0;
+					move_marker();
+				}
+			}
+		}
+	&lt;/script&gt;
+		</pre>
+		<p>Vi har nu et funktionelt spil, som dog vil blive yderligere forbedret i næste blog.</p>
+		<p>Den nuværende udgave kan aftestes <a href="maze_first_try.html">her</a></p>
+	</body>
+</html>
+		

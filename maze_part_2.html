@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8">
+        <title>Labyrintspil (del 2)</title>
+		<link rel="icon" type="image/png" href="images/logo-32x32px.png" >
+		<meta name="author" content="Steffen Grøndahl" >
+	</head>
+	<body>
+		<h1>Labyrintspil (del 2)</h1>
+		<p>I en <a href="maze_part_1.html">tidligere blog</a> implementerede jeg et
+		simpelt labyrintspil. I denne blog vil jeg forbedre på spillet, idet jeg
+		vil benytte en snedig algoritme til at konstruere en ny labyrint, hver gang
+		man har gennemført (altså sluppet ud af) en labyrint.</p>
+		<p>Algoritmen er taget fra <a href="https://rosettacode.org/wiki/Maze_generation">Rosettacode</a>,
+		men jeg har ændret implementeringen, så den er mere logisk (efter min mening).</p>
+		
+		<h2>Idéen i algoritmen</h2>
+		<p>Algoritmen skal give os et nyt sæt af de to dobbeltarrays som beskriver væggene
+		i algoritmen, <span>vertical_walls</span> og <span>horizontal_walls</span>. Idéen
+		i algoritmen er som følger:</p>
+		<p>I vores labyring med 5 gange 5 celler forestiller vi os indledningsvis at der er
+		vægge om alle celler og alle celler er desuden ubesøgt - markeret ved at de er grå:</p>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
+			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
+			<rect stroke="none" fill="#888888" x="60" y="60" width="302" height="302" />
+			<g id="maze" stroke="#000000" stroke-width="2" stroke-linecap="square" fill="none">
+				<line x1="61" y1="61" x2="61" y2="121" />
+				<line x1="121" y1="61" x2="121" y2="121" />
+				<line x1="181" y1="61" x2="181" y2="121" />
+				<line x1="241" y1="61" x2="241" y2="121" />
+				<line x1="301" y1="61" x2="301" y2="121" />
+				<line x1="361" y1="61" x2="361" y2="121" />
+				<line x1="61" y1="121" x2="61" y2="181" />
+				<line x1="121" y1="121" x2="121" y2="181" />
+				<line x1="181" y1="121" x2="181" y2="181" />
+				<line x1="241" y1="121" x2="241" y2="181" />
+				<line x1="301" y1="121" x2="301" y2="181" />
+				<line x1="361" y1="121" x2="361" y2="181" />
+				<line x1="61" y1="181" x2="61" y2="241" />
+				<line x1="121" y1="181" x2="121" y2="241" />
+				<line x1="181" y1="181" x2="181" y2="241" />
+				<line x1="241" y1="181" x2="241" y2="241" />
+				<line x1="301" y1="181" x2="301" y2="241" />
+				<line x1="361" y1="181" x2="361" y2="241" />
+				<line x1="61" y1="241" x2="61" y2="301" />
+				<line x1="121" y1="241" x2="121" y2="301" />
+				<line x1="181" y1="241" x2="181" y2="301" />
+				<line x1="241" y1="241" x2="241" y2="301" />
+				<line x1="301" y1="241" x2="301" y2="301" />
+				<line x1="361" y1="241" x2="361" y2="301" />
+				<line x1="61" y1="301" x2="61" y2="361" />
+				<line x1="121" y1="301" x2="121" y2="361" />
+				<line x1="181" y1="301" x2="181" y2="361" />
+				<line x1="241" y1="301" x2="241" y2="361" />
+				<line x1="301" y1="301" x2="301" y2="361" />
+				<line x1="361" y1="301" x2="361" y2="361" />
+				<line x1="61" y1="61" x2="121" y2="61" />
+				<line x1="61" y1="121" x2="121" y2="121" />
+				<line x1="61" y1="181" x2="121" y2="181" />
+				<line x1="61" y1="241" x2="121" y2="241" />
+				<line x1="61" y1="301" x2="121" y2="301" />
+				<line x1="61" y1="361" x2="121" y2="361" />
+				<line x1="121" y1="61" x2="181" y2="61" />
+				<line x1="121" y1="121" x2="181" y2="121" />
+				<line x1="121" y1="181" x2="181" y2="181" />
+				<line x1="121" y1="241" x2="181" y2="241" />
+				<line x1="121" y1="301" x2="181" y2="301" />
+				<line x1="121" y1="361" x2="181" y2="361" />
+				<line x1="181" y1="61" x2="241" y2="61" />
+				<line x1="181" y1="121" x2="241" y2="121" />
+				<line x1="181" y1="181" x2="241" y2="181" />
+				<line x1="181" y1="241" x2="241" y2="241" />
+				<line x1="181" y1="301" x2="241" y2="301" />
+				<line x1="181" y1="361" x2="241" y2="361" />
+				<line x1="241" y1="61" x2="301" y2="61" />
+				<line x1="241" y1="121" x2="301" y2="121" />
+				<line x1="241" y1="181" x2="301" y2="181" />
+				<line x1="241" y1="241" x2="301" y2="241" />
+				<line x1="241" y1="301" x2="301" y2="301" />
+				<line x1="241" y1="361" x2="301" y2="361" />
+				<line x1="301" y1="61" x2="361" y2="61" />
+				<line x1="301" y1="121" x2="361" y2="121" />
+				<line x1="301" y1="181" x2="361" y2="181" />
+				<line x1="301" y1="241" x2="361" y2="241" />
+				<line x1="301" y1="301" x2="361" y2="301" />
+				<line x1="301" y1="361" x2="361" y2="361" />
+			</g>
+		</svg>
+		<p>Agoritmen udvælger nu en tilfældig celle og starter der. For eksempel cellen 
+		i første række (index 0) og fjerde kolonne (index 3), her noteret med [0,3]. Denne
+		celle er nu besøgt:</p>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
+			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
+			<rect stroke="none" fill="#888888" x="60" y="60" width="302" height="302" />
+			<rect stroke="none" fill="#aaccff" x="240" y="60" width="60" height="60" />
+			<g id="maze" stroke="#000000" stroke-width="2" stroke-linecap="square" fill="none">
+				<line x1="61" y1="61" x2="61" y2="121" />
+				<line x1="121" y1="61" x2="121" y2="121" />
+				<line x1="181" y1="61" x2="181" y2="121" />
+				<line x1="241" y1="61" x2="241" y2="121" />
+				<line x1="301" y1="61" x2="301" y2="121" />
+				<line x1="361" y1="61" x2="361" y2="121" />
+				<line x1="61" y1="121" x2="61" y2="181" />
+				<line x1="121" y1="121" x2="121" y2="181" />
+				<line x1="181" y1="121" x2="181" y2="181" />
+				<line x1="241" y1="121" x2="241" y2="181" />
+				<line x1="301" y1="121" x2="301" y2="181" />
+				<line x1="361" y1="121" x2="361" y2="181" />
+				<line x1="61" y1="181" x2="61" y2="241" />
+				<line x1="121" y1="181" x2="121" y2="241" />
+				<line x1="181" y1="181" x2="181" y2="241" />
+				<line x1="241" y1="181" x2="241" y2="241" />
+				<line x1="301" y1="181" x2="301" y2="241" />
+				<line x1="361" y1="181" x2="361" y2="241" />
+				<line x1="61" y1="241" x2="61" y2="301" />
+				<line x1="121" y1="241" x2="121" y2="301" />
+				<line x1="181" y1="241" x2="181" y2="301" />
+				<line x1="241" y1="241" x2="241" y2="301" />
+				<line x1="301" y1="241" x2="301" y2="301" />
+				<line x1="361" y1="241" x2="361" y2="301" />
+				<line x1="61" y1="301" x2="61" y2="361" />
+				<line x1="121" y1="301" x2="121" y2="361" />
+				<line x1="181" y1="301" x2="181" y2="361" />
+				<line x1="241" y1="301" x2="241" y2="361" />
+				<line x1="301" y1="301" x2="301" y2="361" />
+				<line x1="361" y1="301" x2="361" y2="361" />
+				<line x1="61" y1="61" x2="121" y2="61" />
+				<line x1="61" y1="121" x2="121" y2="121" />
+				<line x1="61" y1="181" x2="121" y2="181" />
+				<line x1="61" y1="241" x2="121" y2="241" />
+				<line x1="61" y1="301" x2="121" y2="301" />
+				<line x1="61" y1="361" x2="121" y2="361" />
+				<line x1="121" y1="61" x2="181" y2="61" />
+				<line x1="121" y1="121" x2="181" y2="121" />
+				<line x1="121" y1="181" x2="181" y2="181" />
+				<line x1="121" y1="241" x2="181" y2="241" />
+				<line x1="121" y1="301" x2="181" y2="301" />
+				<line x1="121" y1="361" x2="181" y2="361" />
+				<line x1="181" y1="61" x2="241" y2="61" />
+				<line x1="181" y1="121" x2="241" y2="121" />
+				<line x1="181" y1="181" x2="241" y2="181" />
+				<line x1="181" y1="241" x2="241" y2="241" />
+				<line x1="181" y1="301" x2="241" y2="301" />
+				<line x1="181" y1="361" x2="241" y2="361" />
+				<line x1="241" y1="61" x2="301" y2="61" />
+				<line x1="241" y1="121" x2="301" y2="121" />
+				<line x1="241" y1="181" x2="301" y2="181" />
+				<line x1="241" y1="241" x2="301" y2="241" />
+				<line x1="241" y1="301" x2="301" y2="301" />
+				<line x1="241" y1="361" x2="301" y2="361" />
+				<line x1="301" y1="61" x2="361" y2="61" />
+				<line x1="301" y1="121" x2="361" y2="121" />
+				<line x1="301" y1="181" x2="361" y2="181" />
+				<line x1="301" y1="241" x2="361" y2="241" />
+				<line x1="301" y1="301" x2="361" y2="301" />
+				<line x1="301" y1="361" x2="361" y2="361" />
+			</g>
+			<circle id="marker" stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(271,91)" />
+		</svg>
+		<p>Den valgte celle har tre naboer (cellerne [0,2], [0,4] og [1,3]). Algoritmen vælger en tilfældig, for eksempel cellen under den
+		første og flytter sig til denne. Undervejs fjernes den væg, man skal gå igennem:</p>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
+			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
+			<rect stroke="none" fill="#888888" x="60" y="60" width="302" height="302" />
+			<rect stroke="none" fill="#aaccff" x="240" y="60" width="60" height="120" />
+			<g id="maze" stroke="#000000" stroke-width="2" stroke-linecap="square" fill="none">
+				<line x1="61" y1="61" x2="61" y2="121" />
+				<line x1="121" y1="61" x2="121" y2="121" />
+				<line x1="181" y1="61" x2="181" y2="121" />
+				<line x1="241" y1="61" x2="241" y2="121" />
+				<line x1="301" y1="61" x2="301" y2="121" />
+				<line x1="361" y1="61" x2="361" y2="121" />
+				<line x1="61" y1="121" x2="61" y2="181" />
+				<line x1="121" y1="121" x2="121" y2="181" />
+				<line x1="181" y1="121" x2="181" y2="181" />
+				<line x1="241" y1="121" x2="241" y2="181" />
+				<line x1="301" y1="121" x2="301" y2="181" />
+				<line x1="361" y1="121" x2="361" y2="181" />
+				<line x1="61" y1="181" x2="61" y2="241" />
+				<line x1="121" y1="181" x2="121" y2="241" />
+				<line x1="181" y1="181" x2="181" y2="241" />
+				<line x1="241" y1="181" x2="241" y2="241" />
+				<line x1="301" y1="181" x2="301" y2="241" />
+				<line x1="361" y1="181" x2="361" y2="241" />
+				<line x1="61" y1="241" x2="61" y2="301" />
+				<line x1="121" y1="241" x2="121" y2="301" />
+				<line x1="181" y1="241" x2="181" y2="301" />
+				<line x1="241" y1="241" x2="241" y2="301" />
+				<line x1="301" y1="241" x2="301" y2="301" />
+				<line x1="361" y1="241" x2="361" y2="301" />
+				<line x1="61" y1="301" x2="61" y2="361" />
+				<line x1="121" y1="301" x2="121" y2="361" />
+				<line x1="181" y1="301" x2="181" y2="361" />
+				<line x1="241" y1="301" x2="241" y2="361" />
+				<line x1="301" y1="301" x2="301" y2="361" />
+				<line x1="361" y1="301" x2="361" y2="361" />
+				<line x1="61" y1="61" x2="121" y2="61" />
+				<line x1="61" y1="121" x2="121" y2="121" />
+				<line x1="61" y1="181" x2="121" y2="181" />
+				<line x1="61" y1="241" x2="121" y2="241" />
+				<line x1="61" y1="301" x2="121" y2="301" />
+				<line x1="61" y1="361" x2="121" y2="361" />
+				<line x1="121" y1="61" x2="181" y2="61" />
+				<line x1="121" y1="121" x2="181" y2="121" />
+				<line x1="121" y1="181" x2="181" y2="181" />
+				<line x1="121" y1="241" x2="181" y2="241" />
+				<line x1="121" y1="301" x2="181" y2="301" />
+				<line x1="121" y1="361" x2="181" y2="361" />
+				<line x1="181" y1="61" x2="241" y2="61" />
+				<line x1="181" y1="121" x2="241" y2="121" />
+				<line x1="181" y1="181" x2="241" y2="181" />
+				<line x1="181" y1="241" x2="241" y2="241" />
+				<line x1="181" y1="301" x2="241" y2="301" />
+				<line x1="181" y1="361" x2="241" y2="361" />
+				<line x1="241" y1="61" x2="301" y2="61" />
+				<line x1="241" y1="181" x2="301" y2="181" />
+				<line x1="241" y1="241" x2="301" y2="241" />
+				<line x1="241" y1="301" x2="301" y2="301" />
+				<line x1="241" y1="361" x2="301" y2="361" />
+				<line x1="301" y1="61" x2="361" y2="61" />
+				<line x1="301" y1="121" x2="361" y2="121" />
+				<line x1="301" y1="181" x2="361" y2="181" />
+				<line x1="301" y1="241" x2="361" y2="241" />
+				<line x1="301" y1="301" x2="361" y2="301" />
+				<line x1="301" y1="361" x2="361" y2="361" />
+			</g>
+			<circle id="marker" stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(271,151)" />
+		</svg>
+		<p>Således fortsættes under hensyntagen til at man aldrig må bevæge sig ind i en celle der allerede er besøgt. Man kan naturligvis ende
+		i en celle hvor alle nabocellerne allerede er besøgt:</p>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
+			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
+			<rect stroke="none" fill="#888888" x="60" y="60" width="302" height="302" />
+			<rect stroke="none" fill="#aaccff" x="240" y="60" width="120" height="120" />
+			<g id="maze" stroke="#000000" stroke-width="2" stroke-linecap="square" fill="none">
+				<line x1="61" y1="61" x2="61" y2="121" />
+				<line x1="121" y1="61" x2="121" y2="121" />
+				<line x1="181" y1="61" x2="181" y2="121" />
+				<line x1="241" y1="61" x2="241" y2="121" />
+				<line x1="301" y1="61" x2="301" y2="121" />
+				<line x1="361" y1="61" x2="361" y2="121" />
+				<line x1="61" y1="121" x2="61" y2="181" />
+				<line x1="121" y1="121" x2="121" y2="181" />
+				<line x1="181" y1="121" x2="181" y2="181" />
+				<line x1="241" y1="121" x2="241" y2="181" />
+				<line x1="361" y1="121" x2="361" y2="181" />
+				<line x1="61" y1="181" x2="61" y2="241" />
+				<line x1="121" y1="181" x2="121" y2="241" />
+				<line x1="181" y1="181" x2="181" y2="241" />
+				<line x1="241" y1="181" x2="241" y2="241" />
+				<line x1="301" y1="181" x2="301" y2="241" />
+				<line x1="361" y1="181" x2="361" y2="241" />
+				<line x1="61" y1="241" x2="61" y2="301" />
+				<line x1="121" y1="241" x2="121" y2="301" />
+				<line x1="181" y1="241" x2="181" y2="301" />
+				<line x1="241" y1="241" x2="241" y2="301" />
+				<line x1="301" y1="241" x2="301" y2="301" />
+				<line x1="361" y1="241" x2="361" y2="301" />
+				<line x1="61" y1="301" x2="61" y2="361" />
+				<line x1="121" y1="301" x2="121" y2="361" />
+				<line x1="181" y1="301" x2="181" y2="361" />
+				<line x1="241" y1="301" x2="241" y2="361" />
+				<line x1="301" y1="301" x2="301" y2="361" />
+				<line x1="361" y1="301" x2="361" y2="361" />
+				<line x1="61" y1="61" x2="121" y2="61" />
+				<line x1="61" y1="121" x2="121" y2="121" />
+				<line x1="61" y1="181" x2="121" y2="181" />
+				<line x1="61" y1="241" x2="121" y2="241" />
+				<line x1="61" y1="301" x2="121" y2="301" />
+				<line x1="61" y1="361" x2="121" y2="361" />
+				<line x1="121" y1="61" x2="181" y2="61" />
+				<line x1="121" y1="121" x2="181" y2="121" />
+				<line x1="121" y1="181" x2="181" y2="181" />
+				<line x1="121" y1="241" x2="181" y2="241" />
+				<line x1="121" y1="301" x2="181" y2="301" />
+				<line x1="121" y1="361" x2="181" y2="361" />
+				<line x1="181" y1="61" x2="241" y2="61" />
+				<line x1="181" y1="121" x2="241" y2="121" />
+				<line x1="181" y1="181" x2="241" y2="181" />
+				<line x1="181" y1="241" x2="241" y2="241" />
+				<line x1="181" y1="301" x2="241" y2="301" />
+				<line x1="181" y1="361" x2="241" y2="361" />
+				<line x1="241" y1="61" x2="301" y2="61" />
+				<line x1="241" y1="181" x2="301" y2="181" />
+				<line x1="241" y1="241" x2="301" y2="241" />
+				<line x1="241" y1="301" x2="301" y2="301" />
+				<line x1="241" y1="361" x2="301" y2="361" />
+				<line x1="301" y1="61" x2="361" y2="61" />
+				<line x1="301" y1="181" x2="361" y2="181" />
+				<line x1="301" y1="241" x2="361" y2="241" />
+				<line x1="301" y1="301" x2="361" y2="301" />
+				<line x1="301" y1="361" x2="361" y2="361" />
+			</g>
+			<circle id="marker" stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(331,91)" />
+		</svg>
+		<p>I dette tilfælde må man gå tilbage til den forrige celle og fortsætte derfra. Er det heller ikke muligt, går man atter i skridt
+		tilbage og så fremdeles. Næste skridt i det valgte eksempel vil således være:</p>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
+			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
+			<rect stroke="none" fill="#888888" x="60" y="60" width="302" height="302" />
+			<rect stroke="none" fill="#aaccff" x="240" y="60" width="120" height="120" />
+			<rect stroke="none" fill="#aaccff" x="300" y="179" width="60" height="61" />
+			<g id="maze" stroke="#000000" stroke-width="2" stroke-linecap="square" fill="none">
+				<line x1="61" y1="61" x2="61" y2="121" />
+				<line x1="121" y1="61" x2="121" y2="121" />
+				<line x1="181" y1="61" x2="181" y2="121" />
+				<line x1="241" y1="61" x2="241" y2="121" />
+				<line x1="301" y1="61" x2="301" y2="121" />
+				<line x1="361" y1="61" x2="361" y2="121" />
+				<line x1="61" y1="121" x2="61" y2="181" />
+				<line x1="121" y1="121" x2="121" y2="181" />
+				<line x1="181" y1="121" x2="181" y2="181" />
+				<line x1="241" y1="121" x2="241" y2="181" />
+				<line x1="361" y1="121" x2="361" y2="181" />
+				<line x1="61" y1="181" x2="61" y2="241" />
+				<line x1="121" y1="181" x2="121" y2="241" />
+				<line x1="181" y1="181" x2="181" y2="241" />
+				<line x1="241" y1="181" x2="241" y2="241" />
+				<line x1="301" y1="181" x2="301" y2="241" />
+				<line x1="361" y1="181" x2="361" y2="241" />
+				<line x1="61" y1="241" x2="61" y2="301" />
+				<line x1="121" y1="241" x2="121" y2="301" />
+				<line x1="181" y1="241" x2="181" y2="301" />
+				<line x1="241" y1="241" x2="241" y2="301" />
+				<line x1="301" y1="241" x2="301" y2="301" />
+				<line x1="361" y1="241" x2="361" y2="301" />
+				<line x1="61" y1="301" x2="61" y2="361" />
+				<line x1="121" y1="301" x2="121" y2="361" />
+				<line x1="181" y1="301" x2="181" y2="361" />
+				<line x1="241" y1="301" x2="241" y2="361" />
+				<line x1="301" y1="301" x2="301" y2="361" />
+				<line x1="361" y1="301" x2="361" y2="361" />
+				<line x1="61" y1="61" x2="121" y2="61" />
+				<line x1="61" y1="121" x2="121" y2="121" />
+				<line x1="61" y1="181" x2="121" y2="181" />
+				<line x1="61" y1="241" x2="121" y2="241" />
+				<line x1="61" y1="301" x2="121" y2="301" />
+				<line x1="61" y1="361" x2="121" y2="361" />
+				<line x1="121" y1="61" x2="181" y2="61" />
+				<line x1="121" y1="121" x2="181" y2="121" />
+				<line x1="121" y1="181" x2="181" y2="181" />
+				<line x1="121" y1="241" x2="181" y2="241" />
+				<line x1="121" y1="301" x2="181" y2="301" />
+				<line x1="121" y1="361" x2="181" y2="361" />
+				<line x1="181" y1="61" x2="241" y2="61" />
+				<line x1="181" y1="121" x2="241" y2="121" />
+				<line x1="181" y1="181" x2="241" y2="181" />
+				<line x1="181" y1="241" x2="241" y2="241" />
+				<line x1="181" y1="301" x2="241" y2="301" />
+				<line x1="181" y1="361" x2="241" y2="361" />
+				<line x1="241" y1="61" x2="301" y2="61" />
+				<line x1="241" y1="181" x2="301" y2="181" />
+				<line x1="241" y1="241" x2="301" y2="241" />
+				<line x1="241" y1="301" x2="301" y2="301" />
+				<line x1="241" y1="361" x2="301" y2="361" />
+				<line x1="301" y1="61" x2="361" y2="61" />
+				<line x1="301" y1="241" x2="361" y2="241" />
+				<line x1="301" y1="301" x2="361" y2="301" />
+				<line x1="301" y1="361" x2="361" y2="361" />
+			</g>
+			<circle id="marker" stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(331,211)" />
+		</svg>
+		
+		<h2>Implementering af algoriten</h2>
+		<p>I implementeringen af selve algoritmen starter man med at definere de to dobbeltarrays til beskrivelse af labyrintens vægge,
+		således, at der er vægge alle steder:</p>
+		<pre>
+		var horizontal =[]; // matrix holding booleans telling if there's an horizontal edge or not
+		for(i=0;i&lt;columns;i++) {
+			horizontal[i] = [];
+			for(j=0;j&lt;rows+1;j++) {
+				horizontal[i][j] = true;
+			}
+		}
+		var vertical =[]; // matrix holding booleans telling if there's an vertical edge or not
+		for(i=0;i&lt;rows;i++) {
+			vertical[i] = [];
+			for(j=0;j&lt;columns+1;j++) {
+				vertical[i][j] = true;
+			}
+		}
+		</pre>
+		<p>Her er <span>rows</span> antallet af rækker i labyrinten og <span>columns</span> antallet af kolonner i labyrinten. I vores
+		tilfælde er begge 5.</p>
+		<p>Herefter defineres et 5 gange 5 stort gitter hvor ingen cellerne er besøgt</p>
+		<pre>
+		var unvisited = []; // cells in maze are initially not visited
+		for (j=0; j&lt;rows; j++) {
+			unvisited[j] = [];
+			for (k=0; k&lt;columns; k++) {
+				unvisited[j].push(true);
+			}
+		}
+		</pre>
+		<p>Endelig vælges en tilfældig celle at starte i. Denne skal naturligvis markeres som besøgt, antallet af besøgte celler tælles ned
+		og cellen adderes til en kurve, <span>path</span>, der skal bruges i tilfælde at vi ender i en blindgyde og har brug for at gå et 
+		skridt (eller flere) tilbage (som vist ovenfor):</p>
+		<pre>
+		var n = rows*columns;
+		var path = [];
+		// select random starting cell
+		var here = [Math.floor(Math.random()*rows), Math.floor(Math.random()*columns)];
+		unvisited[here[0]][here[1]]= false; // the starting point is visited
+		n = n-1;
+		path.push(here);		
+		</pre>
+		<p>Endelig kommer så den egentlige del af algoritmen, hvor vi for den aktuelle celle undersøger om nogle af nabocellerne er
+		tilgængelige, del vil sige ikke har været besøgt før. Er det tilfældet, så går vi til en tilfældig af disse og fjerner samtidig 
+		den væg vi skal passere. Og tæller i øvrigt antallet af ubesøgte celler ned og adderer den nye celle til kurven og lader den være
+		den aktuelle celle:</p>
+		<pre>
+		// loop till all cell visited 
+		while (n &gt; 0) {
+			var neighbors = []; // neighboring points to current cell, here 
+			if(here[0] &gt; 0) {
+				neighbors.push([here[0]-1,here[1]]);
+			}
+			if(here[0] &lt; rows-1) {
+				neighbors.push([here[0]+1,here[1]]);
+			}
+			if(here[1] &gt; 0) {
+				neighbors.push([here[0],here[1]-1]);
+			}
+			if(here[1] &lt; columns-1) {
+				neighbors.push([here[0],here[1]+1]);	
+			}
+			var potential = [];
+			for (j = 0; j &lt; neighbors.length; j++) {
+				if (unvisited[neighbors[j][0]][neighbors[j][1]]) {
+					potential.push(neighbors[j]); // only unvisited neighbors are potential
+				}
+			}
+			if (potential.length &gt; 0) {
+				var next = potential[Math.floor(Math.random()*potential.length)];
+				unvisited[next[0]][next[1]]= false;
+				n = n-1;
+				if(next[0] == here[0]) { // same row
+					vertical[next[0]][Math.max(next[1],here[1])] = false;
+				}
+				else { // same column
+					horizontal[next[1]][Math.max(next[0],here[0])] = false;
+				}
+				path.push(next);
+				here = next;
+			} 
+			else {
+				here = path.pop();
+			}
+		}
+		</pre>
+		<p>Tilfældet hvor der ikke er nogen tilgængelig naboceller betyder at vi fjerner den sidste
+		celle fra kurven.</p>
+		<p>Hele algoritmen kan samles i en funktion, som kaldes med labyrintens antal rækker og kolonner 
+		og derfor kan bruges for en vilkårlig labyrint:</p>
+		<pre>
+	function createEdges(columns,rows) {
+		// initialise
+		var n=columns*rows;
+		var horizontal =[]; // matrix holding booleans telling if there's an horizontal edge or not
+		for(i=0;i&lt;columns;i++) {
+			horizontal[i] = [];
+			for(j=0;j&lt;rows+1;j++) {
+				horizontal[i][j] = true;
+			}
+		}
+		var vertical =[]; // matrix holding booleans telling if there's an vertical edge or not
+		for(i=0;i&lt;rows;i++) {
+			vertical[i] = [];
+			for(j=0;j&lt;columns+1;j++) {
+				vertical[i][j] = true;
+			}
+		}
+		var unvisited = []; // cells in maze are initially not visited
+		for (j=0; j&lt;rows; j++) {
+			unvisited[j] = [];
+			for (k=0; k&lt;columns; k++) {
+				unvisited[j].push(true);
+			}
+		}
+		var path = [];
+		// select random starting cell and later current cell
+		var here = [Math.floor(Math.random()*rows), Math.floor(Math.random()*columns)];
+		unvisited[here[0]][here[1]]= false; // the starting point is visited
+		n = n-1;
+		path.push(here);
+		// loop till all cell visited 
+		while (n &gt; 0) {
+			var neighbors = []; // neighboring points to current cell, here 
+			if(here[0] &gt; 0) {
+				neighbors.push([here[0]-1,here[1]]);
+			}
+			if(here[0] &lt; rows-1) {
+				neighbors.push([here[0]+1,here[1]]);
+			}
+			if(here[1] &gt; 0) {
+				neighbors.push([here[0],here[1]-1]);
+			}
+			if(here[1] &lt; columns-1) {
+				neighbors.push([here[0],here[1]+1]);	
+			}
+			var potential = [];
+			for (j = 0; j &lt; neighbors.length; j++) {
+				if (unvisited[neighbors[j][0]][neighbors[j][1]]) {
+					potential.push(neighbors[j]); // only unvisited neighbors are potential
+				}
+			}
+			if (potential.length &gt; 0) {
+				var next= potential[Math.floor(Math.random()*potential.length)];
+				unvisited[next[0]][next[1]]= false;
+				n = n-1;
+				if(next[0] == here[0]) { // same row
+					vertical[next[0]][Math.max(next[1],here[1])] = false;
+				}
+				else { // same column
+					horizontal[next[1]][Math.max(next[0],here[0])] = false;
+				}
+				path.push(next);
+				here = next;
+			} 
+			else {
+				here = path.pop();
+			}
+		}
+		return {horizontal: horizontal, vertical: vertical};
+	}		
+		</pre>
+		
+		<h2>Optegning af ny labyrint</h2>
+		<p>Nu mangler vi så blot at anvende algoritmen i vores labyrint spil. For at
+		gøre det simpelt vil vi først beregne en ny labyrint, når man har afsluttet 
+		et spil. I metoden <span>move_up</span> retter vi derfor til:</p>
+		<pre>
+	function move_up() { 
+		if(horizontal_walls[current_column][current_row]) {
+			alert("Bump - du kan ikke gå til op");
+		}
+		else {
+			current_row--;
+			move_marker();
+			if(current_row == -1) {
+				alert("Tillykke - du slap ud af labyrinten");
+				var obj = createEdges(5,5);
+				vertical_walls = obj.vertical;
+				horizontal_walls = obj.horizontal;
+				horizontal_walls[4][0] = false; // removing horizontal wall at upper right corner, so we can get out of the maze
+				drawMaze();
+				current_row = 4;
+				current_column = 0;
+				move_marker();
+			}
+		}
+	}
+		</pre>
+		<p>Funktionen <span>draw_maze</span> skal naturligvis implementeres, så 
+		spilleren kan se den rigtige labyrint. Implementeringen er heldigvis forholdsvis lige til:</p>
+		<pre>
+			function drawMaze() {
+				var group = document.getElementById("maze");
+				// Clean up previous maze
+				while (group.firstChild) {
+					group.removeChild(group.firstChild);
+				}
+				// first draw vertical walls
+				for(row=0; row&l;5; row++) {
+					for(column=0; column&l;6; column++) {
+						if(vertical_walls[row][column]) {
+							var x = 61 + column*60;
+							var y = 61 + row*60;
+							var line = document.createElementNS("http://www.w3.org/2000/svg", "line"); 
+							line.setAttributeNS(null,"x1",parseInt(x));
+							line.setAttributeNS(null,"y1",parseInt(y));
+							line.setAttributeNS(null,"x2",parseInt(x));
+							line.setAttributeNS(null,"y2",parseInt(y+60)); 
+							group.appendChild(line);
+						}
+					}
+				}
+				// then draw vertical walls
+				for(column=0; column&l;5; column++) {
+					for(row=0; row&l;6; row++) {
+						if(horizontal_walls[column][row]) {
+							var x = 61 + column*60;
+							var y = 61 + row*60;
+							var line = document.createElementNS("http://www.w3.org/2000/svg", "line"); 
+							line.setAttributeNS(null,"x1",parseInt(x));
+							line.setAttributeNS(null,"y1",parseInt(y));
+							line.setAttributeNS(null,"x2",parseInt(x+60));
+							line.setAttributeNS(null,"y2",parseInt(y)); 
+							group.appendChild(line);
+						}
+					}
+				}
+			}
+		</pre>
+		<p>De første linjer i denne metode fjerner alt indhold i gruppeelementen med id <span>maze</span>,
+		altså de tidligere tegnede vægge.</p>
+		<p>Med disse tilføjelser er vores spil blevet lidt sjovere og det er herfra en smal sag at bygge videre på spillet og
+		for eksempel gøre labyrinten større, sådan som jeg har gjort det på min 
+		<a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">hjemmeside</a>.</p>
+		<p>Den nuværende udgave kan aftestes <a href="maze_second_try.html">her</a></p>
+
+	</body>
+</html>
+		
