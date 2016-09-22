@@ -85,7 +85,7 @@
 	
 			function move_left() { 
 				if(vertical_walls[current_row][current_column]) {
-					alert("Bump - du kan ikke gå til venstre!");
+					alert("Bump - you can't go left!");
 				}
 				else {
 					current_column--;
@@ -97,7 +97,7 @@
 	
 			function move_right() { 
 				if(vertical_walls[current_row][current_column+1]) {
-					alert("Bump - du kan ikke gå til højre!");
+					alert("Bump - you can't go right!");
 				}
 				else {
 					current_column++;
@@ -109,13 +109,13 @@
 	
 			function move_up() { 
 				if(horizontal_walls[current_column][current_row]) {
-					alert("Bump - du kan ikke gå op!");
+					alert("Bump - you can't go up!");
 				}
 				else {
 					current_row--;
 					move_marker();
 					if(current_row == -1) {
-						alert("Tillykke - du slap ud af labyrinten");
+						alert("Congratulation - you got out of the maze");
 						current_row = 4;
 						current_column = 0;
 						move_marker();
@@ -127,7 +127,7 @@
 	
 			function move_down() { 
 				if(horizontal_walls[current_column][current_row+1]) {
-					alert("Bump - du kan ikke gå ned!");
+					alert("Bump - you can't go down!");
 				}
 				else {
 					current_row++;

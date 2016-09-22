@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 		<meta charset="UTF-8">
-        <title>Labyrintspil (del 1)</title>
+        <title>Maze game tutotial (part 1)</title>
 		<link rel="icon" type="image/png" href="images/logo-32x32px.png" >
 		<meta name="author" content="Steffen Grøndahl" >
 		<style>
@@ -13,38 +13,29 @@
 		</style>
 	</head>
 	<body>
-		<h1>Labyrintspil (del 1)</h1>
-		<p>Her lidt sjov afveksling. Jeg elsker at implementere små sjove spil i JavaScript og har
-		allerede en masse på <a href="http://steffengrondahl.dk/spil.html" target="_blank">min hjemmeside</a> (og i
-		parentes bemærket er dette ikke min hjemmeside men min blog ;-)).
-		Det seneste spil er et <a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">labyrintspil</a>, 
-		som jeg primært implementerede for sjov og for at have noget at skrive om her på bloggen :-)</p>
-		<p>I denne blog tutorial har jeg valgt en meget simpel udgave af spillet, som det er hverken
-		et specielt svært eller sjovt spil og ej heller visuelt særligt bemærkelsesværdigt. Men spillet bliver 
-		implementeret, så det let kan gøres mere interessant og flot, som det er gjort på min
-		<a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">hjemmeside</a>.</p>
-		<p>Da der trods alt er en del at implementere vil jeg gennemgå dette over 2 blogindlæg:</p>
+		<h1>Maze game tutotial (part 1)</h1>
+		<p>Here is something fun for amusement. I love to implement small funny games in JavaScript and have
+		a lot og games on <a href="http://steffengrondahl.dk/spil.html" target="_blank">my homesite</a> (and please 
+		notice, my homesite is in danish!).</p>
+		<p>My last game is a <a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">maze game</a>.</p>
+		<p>In this tutorial I will show how to implement a simple version of the game. Focus is on how to implement
+		the game, not to make it particular challenging and fun to play, nor to make it particular visual appealing. However,
+		having learned how implement a basic version of the game, it is easy to expand it to more a complicated maze (and thus
+		much more challenging and fun). Making it better looking isn't either very difficult, as I did it on my  
+		<a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">homepage</a>.</p>
+		<p>I have chosen to split the tuitorial in two parts:</p>
 		<ol>
-			<li>I dette blogindlæg (det første om spillet) gennemgås den nødvendige HTML kode og hvordan man med
-			JavaScript kan bevæge sig gennem labyrinten.</li>
-			<li>I næste blogindlæg vil jeg vise hvordan man kan konstruere selve labyrinten dynamisk ved hjælp af en
-			snedig algoritme.</li>
+			<li>In this part I will show how to implement the necessary HTML code for the visuals and the needed JavaScript 
+			code for movement in the maze.</li>
+			<li>In part 2 I will show how to construct the maze dynamic using an algorithm.</li>
 		</ol>
-		<p>Målet er at implementere et simpel spil med en labyrint, som man kan bevæge sig igennem
-		ved at bruge taster, der simulerer piletaster på et keyboard:</p>
+		<p>The goal is to implement a simple maze game, where the player can move inside the maze using buttons, that
+		simulates the arrow keys on a keyboard (and yes you can also implement movement using the keyboard arrow keys as has been 
+		done on my <a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">homepage</a>). The maze has to look
+		something like this:</p>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
 			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
 			<rect stroke="none" fill="#aaccff" x="60" y="60" width="302" height="302" />
-			<!--
-			<line stroke="#ffffff" x1="61" y1="121" x2="361" y2="121" />
-			<line stroke="#ffffff" x1="61" y1="181" x2="361" y2="181" />
-			<line stroke="#ffffff" x1="61" y1="241" x2="361" y2="241" />
-			<line stroke="#ffffff" x1="61" y1="301" x2="361" y2="301" />
-			<line stroke="#ffffff" x1="121" y1="61" x2="121" y2="361" />
-			<line stroke="#ffffff" x1="181" y1="61" x2="181" y2="361" />
-			<line stroke="#ffffff" x1="241" y1="61" x2="241" y2="361" />
-			<line stroke="#ffffff" x1="301" y1="61" x2="301" y2="361" />
-			-->
 			<g id="maze" stroke="#000000" stroke-width="2" stroke-linecap="square" fill="none">
 				<line x1="61" y1="61" x2="61" y2="121" />
 				<line x1="301" y1="61" x2="301" y2="121" />
@@ -90,12 +81,13 @@
 			<button id="down" style="position: absolute; top: 61px; left: 181px; width: 60px; height: 60px;">&#8595;</button>
 			<button id="right" style="position: absolute; top: 61px; left: 242px; width: 60px; height: 60px;">&#8594;</button>
 		</div>
-		<p>Det er oplagt, at et tryk på tasten med pil op (&#8593;) skal få den gule markør til at bevæge sig op og tilsvarende
-		skal tryk på pil venstre, højre og ned får markøren til at gå samme vej. Bevægelsen skal dog naturligvis kun være
-		mulig dersom der ikke er en labyrint væg i vejen.</p>
-		<h2>HTML kode</h2>
-		<p>HTML koden er forholdvis simpel. Selve labyrinten er implementeret som et inline SVG-element (eller billede) og knapperne
-		er lagt ind i et relativt positioneret DIV-element for at få dem placeret pænt:</p>
+		<p>Obviously, a press on the button with arrow up (&#8593;) will move the yellow circle (the players marker) up and likewise 
+		pressing the arrow left, right and down button will move the yellow circle in left, right and down. However, the movement should 
+		of course only be possible provided the yellow circle isn't hitting a wall in the maze.</p>
+		<h2>HTML code</h2>
+		<p>The HTML code is relatively simple. The maze is implemented as a inline SVG element (or image - the SVG can both be considered 
+		as a image format and a HTML element) and the buttons have been places in relative positioned HTML DIV element, so have them
+		aligned correct:</p>
 		<pre>
 	&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422"&gt;
 		&lt;rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" /&gt;
@@ -146,22 +138,22 @@
 		&lt;button id="right" style="position: absolute; top: 61px; left: 242px; width: 60px; height: 60px;"&gt;&#8594;&lt;/button&gt;
 	&lt;/div&gt;
 		</pre>
-		<p>Her skal for en god ordens skyld lige knyttes nogle får kommentarer til HTML-koden, som ellers ikke kommenteres i disse blogs.</p>
+		<p>Please notice</p>
 		<ul>
-			<li>SVG elementet indeholder fire subelementer. De to først er kvadrater (<span>&lt;rect&gt;</span>), grøn henholdsvis blå. Disse
-			visualiserer området for labyrinten; det blå kvadrat udgør således baggrunden for selve labyrinten. Gruppe elementet 
-			(<span>&lt;g&gt;</span>) indeholder en række subelementer, der alle er linjer (<span>&lt;line&gt;</span>), der hver især
-			visualiserer en væg eller et stykke af en væg i labyrinten. Det sidste element er en udfyldt cirkel (<span>&lt;circle&gt;</span>)
-			der er markøren der skal bevæges gennem labyrinten. Man bemærker at denne samt gruppe elementet, der indeholder alle labyrintvæggene,
-			har fået et id, således at de kan tilgås med JavaScript DOM.</li>
-			<li>De fire knapper er positioneret absolut inden i det relativt positionerede DIV-element. De har hver en id, 
-			således at de kan tilgås med JavaScript DOM.</li>
+			<li>The SVG element contains four sub elemenets. The two first sub elements are squares (<span>&lt;rect&gt;</span>), one green, 
+			the other blue. These squares visualize the area for the maze: the blue square is the background for maze. The group element  
+			(<span>&lt;g&gt;</span>) is next. It contains sub elements, all line element (<span>&lt;line&gt;</span>), each of them 
+			visalizing a wall or a part of a wall in the maze. The last element is a yellow filled circle (<span>&lt;circle&gt;</span>),
+			the player marker which have to be moved through the maze. One notices, the circle and the group element have an id, and 
+			thus can be accesses with JavaScript DOM.</li>
+			<li>The four buttons are positioned absolute in a relative positioned div element. Each of them have an id, so they can be 
+			accessed with JavaScript DOM.</li>
 		</ul>
 		
-		<h2>Grundlæggende bevægelse af markøren</h2>
-		<p>Den valgte labyrint er kendetagenet ved ikke blot at være kvadratisk, men også inddelingen eller placeringen af vægge viser, 
-		at selve labyrinten er implementeret som et gitter med dimensionen 5 gange 5. Dette kan lettest ses ved at tilføje følgende
-		linjer (<span>&lt;line&gt;</span>-element) til SVG-elementet (umiddelbart efter de to <span>&lt;rect&gt;</span>-elementer):</p>
+		<h2>Basic movement of the player marker (yellow circle)</h2>
+		<p>The chosen maze is characterized not only by being quadratic, the placement of the maze walls shows that the maze is 
+		implemented as a grid with dimension 5 times 5. This is easiest to recognize by adding the following lines 
+		(<span>&lt;line&gt;</span> element) to the SVG element (immediately after the two <span>&lt;rect&gt;</span> elements):</p>
 		<pre>
 		&lt;line stroke="#ffffff" stroke-width="1" x1="61" y1="121" x2="361" y2="121" /&gt;
 		&lt;line stroke="#ffffff" stroke-width="1" x1="61" y1="181" x2="361" y2="181" /&gt;
@@ -172,7 +164,7 @@
 		&lt;line stroke="#ffffff" stroke-width="1" x1="241" y1="61" x2="241" y2="361" /&gt;
 		&lt;line stroke="#ffffff" stroke-width="1" x1="301" y1="61" x2="301" y2="361" /&gt;
 		</pre>
-		<p>Med disse linjer ser labyrinten således ud:</p>
+		<p>With these lines included the maze looks like this:</p>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
 			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
 			<rect stroke="none" fill="#aaccff" x="60" y="60" width="302" height="302" />
@@ -235,15 +227,15 @@
 			</g>
 			<circle stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(91,331)" />
 		</svg>
-		<p>Her er desuden tilføjet indices fra 0 til 4 for de fem rækker og kolonner i gitteret. Således er den gule markør ved spillets start
-		i rækken med index 4 og kolonne med index 0. Når man flytter markøren vil den skulle bevæge sig fra en celle (med en givent
-		index for række henholdsvis kolonne) til en nabocelle (hvor et af de to index vil være en større eller mindre. Bevæger man
-		markøren ip vil man således mindske indexet for kolonne med 1 (til 3). Dette kan vi udnytte til at implementere en tegnerutine,
-		der tegner hvor markøren er efter, at den er blevet flyttet:</p>
+		<p>Besides the lines, indices from 0 to 4 have been added for the 5 rows and 5 columns in the grid. Thus the yellow player marker 
+		will initially be in the row with index 4 and the column with index 0. Moving the player markers means moving it from one cell
+		(with a specific index for row and column) to a neighbor cell (where one of the two indices will be either one value greater 
+		or smaller). For isnstance, moving the player marker up, means changing the row index from 4 to 3. We can use this simple relation 
+		between movement, row and column indices to implment a function for drawing the players marker after movement::</p>
 		<pre>
 	&lt;script&gt;
 		var current_column = 0;
-		var current_row = 4;
+		var current_row = 3;
 	
 		function move_marker() { 
 			var x = parseInt(91 + 60*current_column);
@@ -254,10 +246,11 @@
 
 	&lt;/script&gt;	
 		</pre>
-		<p>Man ser at man flytter markøren ved at udnytte attributten "transform" på SVG-elementet. Herunder skal man berenge koordinaterne, 
-		som er givet ved den aktuelle række (<span>current_rwo</span>) og den aktuelle kolonne (<span>current_column</span>) samt et offset,
-		da labyrinten er forskudt en smule.</p>
-		<p>Man kan nu let implementere en foreløbig udgave af bevægelse til venstre med knappen "left":</p>
+		<p>One notice that the movement of the player marker is done by setting the attributte "transform" on the marker SVG element (i.e., 
+		the circle element). To do so, one first have to calculate the corrdinates for the actuel row (<span>current_row</span>) and
+		column (<span>current_column</span>) including an offset, as the maze is shifted both left and down from the top of the SVG element.</p>
+		<p>Using the above function, one can easily implement a preliminary function for movement to the left, triggered by presing the
+		button with the left arrow:</p>
 		<pre>
 	&lt;script&gt;
 		document.getElementById("left").addEventListener("click",move_left,false);
@@ -269,24 +262,27 @@
 
 	&lt;/script&gt;	
 		</pre>
-		<p>Det virker, men med en alvorlig fejl: Bevægelsen respekterer ikke labyrintens vægge men fortsætter tværs igennem, som
-		om de ikke var der. Vi skal derfor finde en måde at tage højde for disse vægge.</p>
+		<p>First we catch the button pressed by appending a event listerner for the click event and let the function <span>move_left</span>
+		handle this event. Second we just count the current columnt one down and call the <span>move_marker</span> function.</p>
+		<p>This is working, however with a serious flaw: The movement doesn't respect the walls of the maze, but continues right through as
+		though the wall didn't exist at all. Thus we need a way to handle these walls. First we need to describe where the walls are.</p>
 		
-		<h2>Beskrivelse af labyrintens vægge</h2>
-		<p>Selve labyrinten består af en række vandrette og lodrette vægge. Faktisk kan man opfatte hver væg, som et stykke, der
-		sidder på en cellerne i gitteret. To vægge kan sidde sammen, endda således af de ligge i forlængelse af hinanden, men de
-		sidder på hver sin celle. Denne måde at se gitteret og væggene på vil vi benytte os af i den følgende.</p>
-		<p>De vandrette og lodrette vægge kan beskrives hver for sig. Vi starter med de lodrette.</p>
-		<p>For hver række i labyrintens gitter kan der være op til 6 vægge. I den første kolonne er det såldes 3 vægge: En helt til
-		venstre og to helt til højre. Mellem disse er der tre plader, hvor det kunne have været en væg men ikke er det. En måde, at
-		beskrive dette på er med et array:</p>
+		<h2>Description of the walls in the maze</h2>
+		<p>The maze contains a number of vertical and horizontal walls. As a matter of fact on can perceive a wall as a continuous
+		set of a pieces, each placed on an edge of a cell in the grid. Thus we will percieve the walls as a number of small pieces, each making 
+		an edge of a cell in the grid.</p>
+		<p>The vertical and horizontal (pieces of) wall can be described independent of each other. We will start describing the vertival 
+		walls.</p>
+		<p>For each row in the grid of the maze, there can be up to 6 (pieces of) vertical walls. In the first row, we thus have 3 walls: 
+		One on the far left and two on the far right. Between these there are 3 cell edged where there could have been a wall, but isn't.
+		We can describe this with an array:</p>
 		<pre>
 		[true, false, false, false, true, true]
 		</pre>
-		<p>Af dette array fremgår det at der er en væg (værdien er <span>true</span>) på den første og de to sidste mulige placering 
-		af en væg, men ikke de resterende 3 steder (værdien er <span>false</span>). Tilsvarende kan vi beskrive om der er eller ikke er
-		en væg i de andre 4 kolonner med tilsvarende arrays. Og dette kan samles i et dobbeltarrat, <span>vertical_walls</span>, der ser
-		såldes ud:</p>
+		<p>This boolean array tells for each cell edge if there is a (piec of) wall or not. The example shows the we have a (piece of) wall
+		at the first edge and the last two, but none on the other edged. Similar we can easily describe the vertical walls in the other
+		rows of the maze, using an boolean array for each row. And this can be gathered in a double array, here called
+		<span>vertical_walls</span>:</p>
 		<pre>
 	&lt;script&gt;
 		var vertical_walls = []; 
@@ -297,14 +293,14 @@
 		vertical_walls[4] = [true, false, true, false, false, true];
 	&lt;/script&gt;	
 		</pre>
-		<p>Man bemærker, at første index i dette dobbelt array referer til rækken mens det andet referere til kolonnen. Således er</p>
+		<p>One notice the first index in the double array refers to the row and the second index to the column. Thus</p>
 		<pre>
 			vertical_walls[4][1]
 		</pre>
-		<p>den anden mulige væg i den nederste række, og den er i øvrigt <span>false</span>, da der ikke er nogen væg her.</p>
-		<p>For de vandrette vægge kan man passende indføre et tilsvarende dobbelt array. Her er det lettest at se det som et array for
-		hver kolonne, med detaljer om hvilke vandrette vægge der er i den pågældende kolonne. Dobbeltarrayet, <span>horizontal_walls</span>
-		ser derfor således ud:</p>
+		<p>refers to the second (possible) wall on the lower row (which by the way is <span>false</span> in our maze).</p>
+		<p>The horizontal walls are described in a similar manner with a double array. However here we chose to look at the
+		array so each entry (row) in the array describes the walls in the particular column in the maze. Thus the double array,
+		<span>horizontal_walls</span> looks like this:</p>
 		<pre>
 	&lt;script&gt;
 		var horizontal_walls = []; 
@@ -315,17 +311,18 @@
 		horizontal_walls[4] = [false, false, false, false, true, true];
 	&lt;/script&gt;	
 		</pre>
-		<p>Man bemærker, at første index i dette dobbelt array nu referer til kolonnen mens det andet referere til rækken. Altså modsat
-		<span>vertical_walls</span>.</p>
-		<h2>Korrekt implementering af bevægelse</h2>
-		<p>Med implementeringen af læabyrintes vægge kan vi nu rette implementeringen af bevægelse til venstre med knappen "left":</p>
+		<p>In this souble array the first index refers to the column (in the maze) and the second index refers to the row (in
+		the maze). This is opposite <span>vertical_walls</span>.</p>
+		<h2>Correkt implementation of movement</h2>
+		<p>Now having a implemention the the walls in the maze we can implement correct functions for movement in the maze.
+		First we update the implementation of moving the players marker left:</p>
 		<pre>
 	&lt;script&gt;
 		document.getElementById("left").addEventListener("click",move_left,false);
 	
 		function move_left() { 
 			if(vertical_walls[current_row][current_column]) {
-				alert("Bump - du kan ikke gå til venstre!");
+				alert("Bump - you can't go left!");
 			}
 			else {
 				current_column--;
@@ -335,15 +332,15 @@
 
 	&lt;/script&gt;	
 		</pre>
-		<p>Bevægelse til højre er stort set tilsvarende, men her skal vi kigge i cellen en plads længere til
-		højre (altså med kolonne index en større):</p>
+		<p>Movemnt to the right is siomilar, however here we have to look out for walls to the right in the current cell (thus
+		we add one to the current column index):</p>
 		<pre>
 	&lt;script&gt;
 		document.getElementById("right").addEventListener("click",move_right,false);
 	
 		function move_right() { 
 			if(vertical_walls[current_row][current_column+1]) {
-				alert("Bump - du kan ikke gå til højre!");
+				alert("Bump - you can't go right");
 			}
 			else {
 				current_column++;
@@ -353,16 +350,16 @@
 
 	&lt;/script&gt;	
 		</pre>
-		<p>Implementeringen af gå op og ned, her bruger vi blot <span>horizontal_walls</span>, da 
-		det er de vandrette vægge der kan komme i vejen for denne bevægelse. Desuden husker vi at
-		første index for denne er kolonne. Således:</p>
+		<p>In the implementation of up and doen movent is done similar, but now using the <span>horizontal_walls</span> arrays, 
+		as the horizontal wall are the ones to look out for. Remembering that the first index for this double array is for maze
+		column we have:</p>
 		<pre>
 	&lt;script&gt;
 		document.getElementById("up").addEventListener("click",move_up,false);
 	
 		function move_up() { 
 			if(horizontal_walls[current_column][current_row]) {
-				alert("Bump - du kan ikke gå op!");
+				alert("Bump - you can't go up!");
 			}
 			else {
 				current_row--;
@@ -374,7 +371,7 @@
 	
 		function move_down() { 
 			if(horizontal_walls[current_column][current_row+1]) {
-				alert("Bump - du kan ikke gå ned!");
+				alert("Bump - you can't go down!");
 			}
 			else {
 				current_row++;
@@ -384,25 +381,25 @@
 
 	&lt;/script&gt;	
 		</pre>
-		<h2>Ud af labyrinten</h2>
-		<p>Der er stadig en enkelt detalje som skal på plads. For når man endelig slipper ud
-		af labyrinten sker der intet. Man kan bevæge sig ind i den igen eller fortsætte op
-		så man ryger helt ud af "spillepladen".</p>
-		<p>Det er let at spore hvornår man er kommet ud af spillet, for så er <span>current_row</span>
-		blevet -1. Vi retter derfor i metoden <span>move_up</span>:</p>
+		<h2>Out of the maze</h2>
+		<p>There is still a single detail we need to fix: When getting out of the maze the game should stop and the player
+		informed that (s)he has escaped the maze. </p>
+		<p>It it actually quite easy to trace when the player has escaped the maze: Moving out of the maze means moving up
+		from from maze row with <span>current_row = 0</span> and thus we get at state where <span>current_row</span>
+		is -1. Thus we Look for this state in the function  <span>move_up</span>:</p>
 		<pre>
 	&lt;script&gt;
 		document.getElementById("up").addEventListener("click",move_up,false);
 	
 		function move_up() { 
 			if(horizontal_walls[current_column][current_row]) {
-				alert("Bump - du kan ikke gå op!");
+				alert("Bump - you can't go up!");
 			}
 			else {
 				current_row--;
 				move_marker();
 				if(current_row == -1) {
-					alert("Tillykke - du slap ud af labyrinten");
+					alert("Congratulation - you got out of the maze");
 					current_row = 4;
 					current_column = 0;
 					move_marker();
@@ -411,8 +408,8 @@
 		}
 	&lt;/script&gt;
 		</pre>
-		<p>Vi har nu et funktionelt spil, som dog vil blive yderligere forbedret i næste blog.</p>
-		<p>Den nuværende udgave kan aftestes <a href="maze_first_try.html">her</a></p>
+		<p>Now we a a working game. We will improve this furteher in the part 2 of this tutorial.</p>
+		<p>You can test this version og the game <a href="maze_first_try.html">here</a></p>
 	</body>
 </html>
 		
