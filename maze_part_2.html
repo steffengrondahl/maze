@@ -2,25 +2,23 @@
 <html lang="en">
     <head>
 		<meta charset="UTF-8">
-        <title>Labyrintspil (del 2)</title>
-		<link rel="icon" type="image/png" href="images/logo-32x32px.png" >
+        <title>Maze game tutorial (part 2)</title>
 		<meta name="author" content="Steffen Grøndahl" >
 	</head>
 	<body>
-		<h1>Labyrintspil (del 2)</h1>
-		<p>I en <a href="maze_part_1.html">tidligere blog</a> implementerede jeg et
-		simpelt labyrintspil. I denne blog vil jeg forbedre på spillet, idet jeg
-		vil benytte en snedig algoritme til at konstruere en ny labyrint, hver gang
-		man har gennemført (altså sluppet ud af) en labyrint.</p>
-		<p>Algoritmen er taget fra <a href="https://rosettacode.org/wiki/Maze_generation">Rosettacode</a>,
-		men jeg har ændret implementeringen, så den er mere logisk (efter min mening).</p>
+		<h1>Maze game tutorial (part 2)</h1>
+		<p>In the <a href="maze_part_1.html">previous tutorial</a> I implemented a simple maze
+		game. In this tutorial I will improve the game by using an algorithm for construction a 
+		new maze, once a game has been completed (i.e. the player has escaped the maze).</p>
+		<p>The algorithm is takes from <a href="https://rosettacode.org/wiki/Maze_generation">Rosettacode</a>,
+		but altered, so it is more logic (in my opinion).</p>
 		
-		<h2>Idéen i algoritmen</h2>
-		<p>Algoritmen skal give os et nyt sæt af de to dobbeltarrays som beskriver væggene
-		i algoritmen, <span>vertical_walls</span> og <span>horizontal_walls</span>. Idéen
-		i algoritmen er som følger:</p>
-		<p>I vores labyring med 5 gange 5 celler forestiller vi os indledningsvis at der er
-		vægge om alle celler og alle celler er desuden ubesøgt - markeret ved at de er grå:</p>
+		<h2>The idea behind the algorithm</h2>
+		<p>The algorithm has to give us a set of two double arrays describing the walls in the maze, 
+		<span>vertical_walls</span> and <span>horizontal_walls</span>. The idea in the 
+		algorithm is:</p>
+		<p>In our maze with a grid of 5 time 5 cells we imagine that we initially have wall at all cell
+		edges and further, that all celle are unvisited - here marked as gray:</p>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
 			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
 			<rect stroke="none" fill="#888888" x="60" y="60" width="302" height="302" />
@@ -87,9 +85,9 @@
 				<line x1="301" y1="361" x2="361" y2="361" />
 			</g>
 		</svg>
-		<p>Agoritmen udvælger nu en tilfældig celle og starter der. For eksempel cellen 
-		i første række (index 0) og fjerde kolonne (index 3), her noteret med [0,3]. Denne
-		celle er nu besøgt:</p>
+		<p>The algorithm chose a random cell and starts a path from there. For example it can start
+		in the first row (index 0) and fourth column (index 3), here notated as [0,3]. This cell
+		is now visited (and therefore blue and not gray):</p>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
 			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
 			<rect stroke="none" fill="#888888" x="60" y="60" width="302" height="302" />
@@ -158,8 +156,10 @@
 			</g>
 			<circle id="marker" stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(271,91)" />
 		</svg>
-		<p>Den valgte celle har tre naboer (cellerne [0,2], [0,4] og [1,3]). Algoritmen vælger en tilfældig, for eksempel cellen under den
-		første og flytter sig til denne. Undervejs fjernes den væg, man skal gå igennem:</p>
+		<p>The selected (and current) cell has 3 neighbors, the cells at [0,2], [0,4] and [1,3] (using the above notation where the first
+		digit refers to the row index and the second to the column index). Now the algorithm will chose a random neighbor and move to this 
+		cell. In this example the random selected cell is the one just below the first (i.e. ayt [1,3]). During the movement from one
+		cell to the next, the wall being passed is removed:</p>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
 			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
 			<rect stroke="none" fill="#888888" x="60" y="60" width="302" height="302" />
@@ -227,8 +227,8 @@
 			</g>
 			<circle id="marker" stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(271,151)" />
 		</svg>
-		<p>Således fortsættes under hensyntagen til at man aldrig må bevæge sig ind i en celle der allerede er besøgt. Man kan naturligvis ende
-		i en celle hvor alle nabocellerne allerede er besøgt:</p>
+		<p>Thu continuing under the condition, never to go into a visited cell if there are unvisited neightbor cells. One can however end
+		in a cell who only has visited neighbors:</p>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
 			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
 			<rect stroke="none" fill="#888888" x="60" y="60" width="302" height="302" />
@@ -294,8 +294,9 @@
 			</g>
 			<circle id="marker" stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(331,91)" />
 		</svg>
-		<p>I dette tilfælde må man gå tilbage til den forrige celle og fortsætte derfra. Er det heller ikke muligt, går man atter i skridt
-		tilbage og så fremdeles. Næste skridt i det valgte eksempel vil således være:</p>
+		<p>In this case one will step back to the previous cell and continu from there to the next unvisited cell. If this cell neither has 
+		unvisited neighbors one has to go one step further back an so fort till one get to a cell with unvisited neighbord. In our case
+		the next step will be:</p>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
 			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
 			<rect stroke="none" fill="#888888" x="60" y="60" width="302" height="302" />
@@ -362,101 +363,101 @@
 			<circle id="marker" stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(331,211)" />
 		</svg>
 		
-		<h2>Implementering af algoriten</h2>
-		<p>I implementeringen af selve algoritmen starter man med at definere de to dobbeltarrays til beskrivelse af labyrintens vægge,
-		således, at der er vægge alle steder:</p>
+		<h2>Implementation of the algorithm</h2>
+		<p>To implement the algorithm one will first have to define the two double arrays describing the walls of the maze. And these
+		will initially describe a scenario, where alle cells are surronded by walls:</p>
 		<pre>
 		var horizontal =[]; // matrix holding booleans telling if there's an horizontal edge or not
 		for(i=0;i&lt;columns;i++) {
 			horizontal[i] = [];
 			for(j=0;j&lt;rows+1;j++) {
-				horizontal[i][j] = true;
+				horizontal[i][j] = true; // initially there is walls in all possible locations, i.e. around every cell
 			}
 		}
 		var vertical =[]; // matrix holding booleans telling if there's an vertical edge or not
 		for(i=0;i&lt;rows;i++) {
 			vertical[i] = [];
 			for(j=0;j&lt;columns+1;j++) {
-				vertical[i][j] = true;
+				vertical[i][j] = true; // initially there is walls in all possible locations, i.e. around every cell
 			}
 		}
 		</pre>
-		<p>Her er <span>rows</span> antallet af rækker i labyrinten og <span>columns</span> antallet af kolonner i labyrinten. I vores
-		tilfælde er begge 5.</p>
-		<p>Herefter defineres et 5 gange 5 stort gitter hvor ingen cellerne er besøgt</p>
+		<p>Here <span>rows</span> is the number of rows in the maze and <span>columns</span> is the number of columns in the maze. 
+		In our example both will take the value 5.</p>
+		<p>Now we will define a 5 time 5 grid describing which of the cell is unvisited. Initially all cells are unvisited:</p>
 		<pre>
-		var unvisited = []; // cells in maze are initially not visited
+		var unvisited = []; // double array telling if cells have been visited or not
 		for (j=0; j&lt;rows; j++) {
-			unvisited[j] = [];
+			unvisited[j] = []; 
 			for (k=0; k&lt;columns; k++) {
-				unvisited[j].push(true);
+				unvisited[j].push(true); // Initially all cells in maze are not visited
 			}
 		}
 		</pre>
-		<p>Endelig vælges en tilfældig celle at starte i. Denne skal naturligvis markeres som besøgt, antallet af besøgte celler tælles ned
-		og cellen adderes til en kurve, <span>path</span>, der skal bruges i tilfælde at vi ender i en blindgyde og har brug for at gå et 
-		skridt (eller flere) tilbage (som vist ovenfor):</p>
+		<p>The algorithm wil start selecting a random cell to start. This cell will ve marked as visited and the number of visited cells
+		will be counten up. Moreover this cell is added to a <span>path</span>, which purpose is to be able to to go back in case
+		we ends in a cell we no unvisited neighbors (i.e. in a dead end as depitched above):</p>
 		<pre>
-		var n = rows*columns;
-		var path = [];
+		var n = rows*columns; // number og unvisited neighbors
+		var path = []; 
 		// select random starting cell
 		var here = [Math.floor(Math.random()*rows), Math.floor(Math.random()*columns)];
 		unvisited[here[0]][here[1]]= false; // the starting point is visited
-		n = n-1;
-		path.push(here);		
+		n = n-1; // now one less cell is unvisited
+		path.push(here); // add current cell to path
 		</pre>
-		<p>Endelig kommer så den egentlige del af algoritmen, hvor vi for den aktuelle celle undersøger om nogle af nabocellerne er
-		tilgængelige, del vil sige ikke har været besøgt før. Er det tilfældet, så går vi til en tilfældig af disse og fjerner samtidig 
-		den væg vi skal passere. Og tæller i øvrigt antallet af ubesøgte celler ned og adderer den nye celle til kurven og lader den være
-		den aktuelle celle:</p>
+		<p>Finally we have the main part of the algorithms, where we examine if any of the current cell neighbor cells haven't been 
+		visited. If this is the case, we pick a random of these cells, let it be the new current cell, removed the wall between the 
+		previous cell and this  cell, marking the now current cell as visited and adds it to the path. And count the number of unvisited 
+		cells one down:</p>
 		<pre>
-		// loop till all cell visited 
-		while (n &gt; 0) {
+		// loop till all cell have been visited 
+		while (n &gt; 0) { 
 			var neighbors = []; // neighboring points to current cell, here 
 			if(here[0] &gt; 0) {
-				neighbors.push([here[0]-1,here[1]]);
+				neighbors.push([here[0]-1,here[1]]); // cell to the left of current cell
 			}
 			if(here[0] &lt; rows-1) {
-				neighbors.push([here[0]+1,here[1]]);
+				neighbors.push([here[0]+1,here[1]]); // cell to the right of current cell
 			}
 			if(here[1] &gt; 0) {
-				neighbors.push([here[0],here[1]-1]);
+				neighbors.push([here[0],here[1]-1]); // cell over the current cell
 			}
 			if(here[1] &lt; columns-1) {
-				neighbors.push([here[0],here[1]+1]);	
+				neighbors.push([here[0],here[1]+1]); // cell below the current cell
 			}
-			var potential = [];
+			var potential = []; // list of potential next cells, i.e. neighboring cell that haven't been visited
 			for (j = 0; j &lt; neighbors.length; j++) {
 				if (unvisited[neighbors[j][0]][neighbors[j][1]]) {
 					potential.push(neighbors[j]); // only unvisited neighbors are potential
 				}
 			}
-			if (potential.length &gt; 0) {
+			if (potential.length &gt; 0) { // go to random neighbor cell
 				var next = potential[Math.floor(Math.random()*potential.length)];
 				unvisited[next[0]][next[1]]= false;
 				n = n-1;
-				if(next[0] == here[0]) { // same row
-					vertical[next[0]][Math.max(next[1],here[1])] = false;
-				}
-				else { // same column
+				// remove wall either ... 
+				if(next[0] == here[0]) { // ... same row (i.e. removing vertical wall)
+					vertical[next[0]][Math.max(next[1],here[1])] = false; 
+				} // ... or ...
+				else { // ... same column (i.e. removing horizontal wall)
 					horizontal[next[1]][Math.max(next[0],here[0])] = false;
 				}
 				path.push(next);
 				here = next;
 			} 
-			else {
+			else { // all neighbor cells have been visited go one step back
 				here = path.pop();
 			}
 		}
 		</pre>
-		<p>Tilfældet hvor der ikke er nogen tilgængelig naboceller betyder at vi fjerner den sidste
-		celle fra kurven.</p>
-		<p>Hele algoritmen kan samles i en funktion, som kaldes med labyrintens antal rækker og kolonner 
-		og derfor kan bruges for en vilkårlig labyrint:</p>
+		<p>The case where there is no unvisited neighbor cells implies we remove the last cell from the path.</p>
+		<p>The full algorithm  can be gathered in a function, which will have the number of rows and columns for the
+		maze as aregument, and thus can be used for an arbitrary maze:</p>
 		<pre>
 	function createEdges(columns,rows) {
 		// initialise
-		var n=columns*rows;
+		var n=columns*rows; 
 		var horizontal =[]; // matrix holding booleans telling if there's an horizontal edge or not
 		for(i=0;i&lt;columns;i++) {
 			horizontal[i] = [];
@@ -509,10 +510,10 @@
 				var next= potential[Math.floor(Math.random()*potential.length)];
 				unvisited[next[0]][next[1]]= false;
 				n = n-1;
-				if(next[0] == here[0]) { // same row
+				if(next[0] == here[0]) { // previous and new cell are in same row, i.e. removing vertical wall
 					vertical[next[0]][Math.max(next[1],here[1])] = false;
 				}
-				else { // same column
+				else { // // previous and new cell are in same column, i.e. removing horizontal wall
 					horizontal[next[1]][Math.max(next[0],here[0])] = false;
 				}
 				path.push(next);
@@ -526,21 +527,21 @@
 	}		
 		</pre>
 		
-		<h2>Optegning af ny labyrint</h2>
-		<p>Nu mangler vi så blot at anvende algoritmen i vores labyrint spil. For at
-		gøre det simpelt vil vi først beregne en ny labyrint, når man har afsluttet 
-		et spil. I metoden <span>move_up</span> retter vi derfor til:</p>
+		<h2>Drawing a new maze</h2>
+		<p>Now all we need is to use the algorithm in our maze game. To keep it simple we will first calculate and create a new 
+		maze when the player has completed a game (i.e. escaped a maze). In the function <span>move_up</span> we changed 
+		the code to:</p>
 		<pre>
 	function move_up() { 
 		if(horizontal_walls[current_column][current_row]) {
-			alert("Bump - du kan ikke gå til op");
+			alert("Bump - you can't go up!");
 		}
 		else {
 			current_row--;
 			move_marker();
 			if(current_row == -1) {
-				alert("Tillykke - du slap ud af labyrinten");
-				var obj = createEdges(5,5);
+				alert("Congratulation - you got out of the maze");
+				var obj = createEdges(5,5); // create new maze
 				vertical_walls = obj.vertical;
 				horizontal_walls = obj.horizontal;
 				horizontal_walls[4][0] = false; // removing horizontal wall at upper right corner, so we can get out of the maze
@@ -552,8 +553,8 @@
 		}
 	}
 		</pre>
-		<p>Funktionen <span>draw_maze</span> skal naturligvis implementeres, så 
-		spilleren kan se den rigtige labyrint. Implementeringen er heldigvis forholdsvis lige til:</p>
+		<p>The function <span>draw_maze</span> have to be implemented so the player will se the correct maze. Fortunately
+		this is quite easy:</p>
 		<pre>
 			function drawMaze() {
 				var group = document.getElementById("maze");
@@ -593,12 +594,14 @@
 				}
 			}
 		</pre>
-		<p>De første linjer i denne metode fjerner alt indhold i gruppeelementen med id <span>maze</span>,
-		altså de tidligere tegnede vægge.</p>
-		<p>Med disse tilføjelser er vores spil blevet lidt sjovere og det er herfra en smal sag at bygge videre på spillet og
-		for eksempel gøre labyrinten større, sådan som jeg har gjort det på min 
-		<a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">hjemmeside</a>.</p>
-		<p>Den nuværende udgave kan aftestes <a href="maze_second_try.html">her</a></p>
+		<p>The first few lines of codes in this function removes all contents from the SVG group element with id <span>maze</span>,
+		in other words the previous drawn walls.</p>
+		<p>With this modification our games have been improved and made more challenging and fun. From here it is a straighforward 
+		to expand the game both with regards to complexity (making the maze bigger, implementing key listerner for using keyboard
+		arrow keys as alternative to button, etc) and visually (making it more visual appealing),
+		as has been done on my 
+		<a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">homepage</a>.</p>
+		<p>This new improved version of our maze game can be seen and played <a href="maze_second_try.html">here</a></p>
 
 	</body>
 </html>
