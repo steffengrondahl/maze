@@ -1,2 +1,2 @@
 # maze
-A few simple HTML pages describing how to create a maze game. These are initially in danish, but will be translated to english.
+This i a simple tutorial describing how to make a simple maze game in HTML and JavaScript. Graphical contents is made primary with inline SVG elements. 
