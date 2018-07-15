@@ -351,7 +351,7 @@
 		</pre>
 		<p>The implementation of up and down movement is done similar, but now using the <span>horizontal_walls</span> arrays, 
 		as the horizontal wall are the ones to look out for. Remembering that the first index for this double array is for maze
-		column we have:</p>
+		column, we have:</p>
 		<pre>
 	&lt;script&gt;
 		document.getElementById("up").addEventListener("click",move_up,false);
@@ -382,10 +382,10 @@
 		</pre>
 		<h2>Out of the maze</h2>
 		<p>There is still a single detail we need to fix: When getting out of the maze the game should stop and the player
-		informed that (s)he has escaped the maze. </p>
+		informed that (s)he has escaped the maze.</p>
 		<p>It it actually quite easy to trace when the player has escaped the maze: Moving out of the maze means moving up
 		from from maze row with <span>current_row = 0</span> and thus we get at state where <span>current_row</span>
-		is -1. Thus we look for this state in the function  <span>move_up</span>:</p>
+		is -1. Thus we look for this state in the function <span>move_up</span>:</p>
 		<pre>
 	&lt;script&gt;
 		document.getElementById("up").addEventListener("click",move_up,false);
@@ -407,7 +407,7 @@
 		}
 	&lt;/script&gt;
 		</pre>
-		<p>Now we a a working game. We will improve this furteher in the part 2 of this tutorial.</p>
+		<p>Now we have a working game. We will improve this further in the part 2 of this tutorial.</p>
 		<p>You can test this version of the game <a href="maze_first_try.html">here</a></p>
 	</body>
 </html>
