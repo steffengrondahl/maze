@@ -14,21 +14,21 @@
 	<body>
 		<h1>Maze game tutotial (part 1)</h1>
 		<p>Here is something fun for amusement. I love to implement small funny games in JavaScript and have
-		a lot og games on <a href="http://steffengrondahl.dk/spil.html" target="_blank">my homesite</a> (and please 
+		a lot of games on <a href="http://steffengrondahl.dk/spil.html" target="_blank">my homesite</a> (and please 
 		notice, my homesite is in danish!).</p>
 		<p>My last game is a <a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">maze game</a>.</p>
-		<p>In this tutorial I will show how to implement a simple version of the game. Focus is on how to implement
+		<p>In this tutorial, I will show how to implement a simple version of the game. Focus is on how to implement
 		the game, not to make it particular challenging and fun to play, nor to make it particular visual appealing. However,
 		having learned how implement a basic version of the game, it is easy to expand it to more a complicated maze (and thus
 		much more challenging and fun). Making it better looking isn't either very difficult, as I did it on my  
 		<a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">homepage</a>.</p>
-		<p>I have chosen to split the tuitorial in two parts:</p>
+		<p>I have chosen to split the tutorial in two parts:</p>
 		<ol>
 			<li>In this part I will show how to implement the necessary HTML code for the visuals and the needed JavaScript 
 			code for movement in the maze.</li>
 			<li>In part 2 I will show how to construct the maze dynamic using an algorithm.</li>
 		</ol>
-		<p>The goal is to implement a simple maze game, where the player can move inside the maze using buttons, that
+		<p>The goal is to implement a simple maze game, where the player can move inside the maze using buttons, which
 		simulates the arrow keys on a keyboard (and yes you can also implement movement using the keyboard arrow keys as has been 
 		done on my <a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">homepage</a>). The maze has to look
 		something like this:</p>
@@ -81,8 +81,8 @@
 			<button id="right" style="position: absolute; top: 61px; left: 242px; width: 60px; height: 60px;">&#8594;</button>
 		</div>
 		<p>Obviously, a press on the button with arrow up (&#8593;) will move the yellow circle (the players marker) up and likewise 
-		pressing the arrow left, right and down button will move the yellow circle in left, right and down. However, the movement should 
-		of course only be possible provided the yellow circle isn't hitting a wall in the maze.</p>
+		pressing the arrow left, right and down button will move the yellow circle in left, right and down repectively. However, the 
+		movement should of course only be possible provided the yellow circle isn't hitting a wall in the maze.</p>
 		<h2>HTML code</h2>
 		<p>The HTML code is relatively simple. The maze is implemented as a inline SVG element (or image - the SVG can both be considered 
 		as a image format and a HTML element) and the buttons have been places in relative positioned HTML DIV element, so have them
@@ -139,18 +139,18 @@
 		</pre>
 		<p>Please notice</p>
 		<ul>
-			<li>The SVG element contains four sub elemenets. The two first sub elements are squares (<span>&lt;rect&gt;</span>), one green, 
+			<li>The SVG element contains four sub elements. The two first sub elements are squares (<span>&lt;rect&gt;</span>), one green, 
 			the other blue. These squares visualize the area for the maze: the blue square is the background for maze. The group element  
 			(<span>&lt;g&gt;</span>) is next. It contains sub elements, all line element (<span>&lt;line&gt;</span>), each of them 
 			visalizing a wall or a part of a wall in the maze. The last element is a yellow filled circle (<span>&lt;circle&gt;</span>),
-			the player marker which have to be moved through the maze. One notices, the circle and the group element have an id, and 
+			the players marker, which have to be moved through the maze. One notices, the circle and the group element have an id and 
 			thus can be accesses with JavaScript DOM.</li>
 			<li>The four buttons are positioned absolute in a relative positioned div element. Each of them have an id, so they can be 
 			accessed with JavaScript DOM.</li>
 		</ul>
 		
 		<h2>Basic movement of the player marker (yellow circle)</h2>
-		<p>The chosen maze is characterized not only by being quadratic, the placement of the maze walls shows that the maze is 
+		<p>The chosen maze is characterized not only by being quadratic. The placement of the maze walls shows that the maze is 
 		implemented as a grid with dimension 5 times 5. This is easiest to recognize by adding the following lines 
 		(<span>&lt;line&gt;</span> element) to the SVG element (immediately after the two <span>&lt;rect&gt;</span> elements):</p>
 		<pre>
@@ -163,7 +163,7 @@
 		&lt;line stroke="#ffffff" stroke-width="1" x1="241" y1="61" x2="241" y2="361" /&gt;
 		&lt;line stroke="#ffffff" stroke-width="1" x1="301" y1="61" x2="301" y2="361" /&gt;
 		</pre>
-		<p>With these lines included the maze looks like this:</p>
+		<p>With these lines included, the maze looks like this:</p>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422">
 			<rect stroke="none" fill="#66dd44" x="0" y="0" width="422" height="422" />
 			<rect stroke="none" fill="#aaccff" x="60" y="60" width="302" height="302" />
@@ -226,11 +226,11 @@
 			</g>
 			<circle stroke="#000000" stroke-width="0" fill="#ffff00" r="20" cx="0" cy="0" transform="translate(91,331)" />
 		</svg>
-		<p>Besides the lines, indices from 0 to 4 have been added for the 5 rows and 5 columns in the grid. Thus the yellow player marker 
+		<p>Besides the lines, indices from 0 to 4 have been added for the 5 rows and 5 columns in the grid. Thus the yellow players marker 
 		will initially be in the row with index 4 and the column with index 0. Moving the player markers means moving it from one cell
 		(with a specific index for row and column) to a neighbor cell (where one of the two indices will be either one value greater 
-		or smaller). For isnstance, moving the player marker up, means changing the row index from 4 to 3. We can use this simple relation 
-		between movement, row and column indices to implment a function for drawing the players marker after movement::</p>
+		or smaller). For instance, moving the player marker up, means changing the row index from 4 to 3. We can use this simple relation 
+		between movement, row and column indices to implement a function for drawing the players marker after movement:</p>
 		<pre>
 	&lt;script&gt;
 		var current_column = 0;
@@ -245,8 +245,8 @@
 
 	&lt;/script&gt;	
 		</pre>
-		<p>One notice that the movement of the player marker is done by setting the attributte "transform" on the marker SVG element (i.e., 
-		the circle element). To do so, one first have to calculate the corrdinates for the actuel row (<span>current_row</span>) and
+		<p>One notice, that the movement of the player marker is done by setting the attributte "transform" on the marker SVG element (i.e., 
+		the circle element). To do so, one first have to calculate the coordinates for the actual row (<span>current_row</span>) and
 		column (<span>current_column</span>) including an offset, as the maze is shifted both left and down from the top of the SVG element.</p>
 		<p>Using the above function, one can easily implement a preliminary function for movement to the left, triggered by presing the
 		button with the left arrow:</p>
@@ -261,15 +261,15 @@
 
 	&lt;/script&gt;	
 		</pre>
-		<p>First we catch the button pressed by appending a event listerner for the click event and let the function <span>move_left</span>
-		handle this event. Second we just count the current columnt one down and call the <span>move_marker</span> function.</p>
+		<p>First, we catch the button pressed by appending a event listerner for the click event and let the function <span>move_left</span>
+		handle this event. Second, we just count the current columnt one down and call the <span>move_marker</span> function.</p>
 		<p>This is working, however with a serious flaw: The movement doesn't respect the walls of the maze, but continues right through as
 		though the wall didn't exist at all. Thus we need a way to handle these walls. First we need to describe where the walls are.</p>
 		
 		<h2>Description of the walls in the maze</h2>
 		<p>The maze contains a number of vertical and horizontal walls. As a matter of fact on can perceive a wall as a continuous
-		set of a pieces, each placed on an edge of a cell in the grid. Thus we will percieve the walls as a number of small pieces, each making 
-		an edge of a cell in the grid.</p>
+		set of a pieces, each placed on an edge of a cell in the grid. Thus we will percieve the walls as a number of small pieces, each 
+		making an edge of a cell in the grid.</p>
 		<p>The vertical and horizontal (pieces of) wall can be described independent of each other. We will start describing the vertival 
 		walls.</p>
 		<p>For each row in the grid of the maze, there can be up to 6 (pieces of) vertical walls. In the first row, we thus have 3 walls: 
@@ -278,8 +278,8 @@
 		<pre>
 		[true, false, false, false, true, true]
 		</pre>
-		<p>This boolean array tells for each cell edge if there is a (piec of) wall or not. The example shows the we have a (piece of) wall
-		at the first edge and the last two, but none on the other edged. Similar we can easily describe the vertical walls in the other
+		<p>This boolean array tells for each cell edge if there is a (piece of) wall or not. The example shows the we have a (piece of) wall
+		at the first edge and the last two, but none on the other edges. Similar we can easily describe the vertical walls in the other
 		rows of the maze, using an boolean array for each row. And this can be gathered in a double array, here called
 		<span>vertical_walls</span>:</p>
 		<pre>
@@ -297,7 +297,7 @@
 			vertical_walls[4][1]
 		</pre>
 		<p>refers to the second (possible) wall on the lower row (which by the way is <span>false</span> in our maze).</p>
-		<p>The horizontal walls are described in a similar manner with a double array. However here we chose to look at the
+		<p>The horizontal walls are described in a similar manner with a double array. However here we choose to look at the
 		array so each entry (row) in the array describes the walls in the particular column in the maze. Thus the double array,
 		<span>horizontal_walls</span> looks like this:</p>
 		<pre>
@@ -310,11 +310,11 @@
 		horizontal_walls[4] = [false, false, false, false, true, true];
 	&lt;/script&gt;	
 		</pre>
-		<p>In this souble array the first index refers to the column (in the maze) and the second index refers to the row (in
+		<p>In this double array the first index refers to the column (in the maze) and the second index refers to the row (in
 		the maze). This is opposite <span>vertical_walls</span>.</p>
-		<h2>Correkt implementation of movement</h2>
+		<h2>Correct implementation of movement</h2>
 		<p>Now having a implemention the the walls in the maze we can implement correct functions for movement in the maze.
-		First we update the implementation of moving the players marker left:</p>
+		First, we update the implementation of moving the players marker left:</p>
 		<pre>
 	&lt;script&gt;
 		document.getElementById("left").addEventListener("click",move_left,false);
@@ -331,7 +331,7 @@
 
 	&lt;/script&gt;	
 		</pre>
-		<p>Movemnt to the right is siomilar, however here we have to look out for walls to the right in the current cell (thus
+		<p>Movement to the right is similar, however here we have to look out for walls to the right in the current cell (thus
 		we add one to the current column index):</p>
 		<pre>
 	&lt;script&gt;
@@ -349,7 +349,7 @@
 
 	&lt;/script&gt;	
 		</pre>
-		<p>In the implementation of up and doen movent is done similar, but now using the <span>horizontal_walls</span> arrays, 
+		<p>The implementation of up and down movement is done similar, but now using the <span>horizontal_walls</span> arrays, 
 		as the horizontal wall are the ones to look out for. Remembering that the first index for this double array is for maze
 		column we have:</p>
 		<pre>
@@ -385,7 +385,7 @@
 		informed that (s)he has escaped the maze. </p>
 		<p>It it actually quite easy to trace when the player has escaped the maze: Moving out of the maze means moving up
 		from from maze row with <span>current_row = 0</span> and thus we get at state where <span>current_row</span>
-		is -1. Thus we Look for this state in the function  <span>move_up</span>:</p>
+		is -1. Thus we look for this state in the function  <span>move_up</span>:</p>
 		<pre>
 	&lt;script&gt;
 		document.getElementById("up").addEventListener("click",move_up,false);
@@ -408,7 +408,7 @@
 	&lt;/script&gt;
 		</pre>
 		<p>Now we a a working game. We will improve this furteher in the part 2 of this tutorial.</p>
-		<p>You can test this version og the game <a href="maze_first_try.html">here</a></p>
+		<p>You can test this version of the game <a href="maze_first_try.html">here</a></p>
 	</body>
 </html>
 		
