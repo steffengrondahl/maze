@@ -4,12 +4,6 @@
 		<meta charset="UTF-8">
         <title>Maze game tutotial (part 1)</title>
 		<meta name="author" content="Steffen Grøndahl" >
-		<style>
-			body {
-			}
-			div {
-			}
-		</style>
 	</head>
 	<body>
 		<h1>Maze game tutotial (part 1)</h1>
@@ -24,9 +18,9 @@
 		<a href="http://steffengrondahl.dk/spil_labyrint.html" target="_blank">homepage</a>.</p>
 		<p>I have chosen to split the tutorial in two parts:</p>
 		<ol>
-			<li>In this part I will show how to implement the necessary HTML code for the visuals and the needed JavaScript 
+			<li>In this part, I will show how to implement the necessary HTML code for the visuals and the needed JavaScript 
 			code for movement in the maze.</li>
-			<li>In part 2 I will show how to construct the maze dynamic using an algorithm.</li>
+			<li>In part 2, I will show how to construct the maze dynamic using an algorithm.</li>
 		</ol>
 		<p>The goal is to implement a simple maze game, where the player can move inside the maze using buttons, which
 		simulates the arrow keys on a keyboard (and yes you can also implement movement using the keyboard arrow keys as has been 
@@ -85,7 +79,7 @@
 		movement should of course only be possible provided the yellow circle isn't hitting a wall in the maze.</p>
 		<h2>HTML code</h2>
 		<p>The HTML code is relatively simple. The maze is implemented as a inline SVG element (or image - the SVG can both be considered 
-		as a image format and a HTML element) and the buttons have been places in relative positioned HTML DIV element, so have them
+		as a image format and a HTML element) and the buttons have been placed in relative positioned HTML DIV element, so have them
 		aligned correct:</p>
 		<pre>
 	&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 422" width="422" height="422"&gt;
@@ -151,7 +145,7 @@
 		
 		<h2>Basic movement of the player marker (yellow circle)</h2>
 		<p>The chosen maze is characterized not only by being quadratic. The placement of the maze walls shows that the maze is 
-		implemented as a grid with dimension 5 times 5. This is easiest to recognize by adding the following lines 
+		implemented as a grid with dimension 5 times 5, with each of its 25 cells having dimension 60 time 60 pixels. This is easiest to recognize by adding the following lines 
 		(<span>&lt;line&gt;</span> element) to the SVG element (immediately after the two <span>&lt;rect&gt;</span> elements):</p>
 		<pre>
 		&lt;line stroke="#ffffff" stroke-width="1" x1="61" y1="121" x2="361" y2="121" /&gt;
@@ -407,8 +401,8 @@
 		}
 	&lt;/script&gt;
 		</pre>
-		<p>Now we have a working game. We will improve this further in the part 2 of this tutorial.</p>
-		<p>You can test this version of the game <a href="maze_first_try.html">here</a></p>
+		<p>Now we have a working game. We will improve this further in the <a href="maze_part_2.html">part 2</a> of this tutorial.</p>
+		<p>You can test this version of the game <a href="maze_first_try.html" target="_blank">here</a>.</p>
 	</body>
 </html>
 		
